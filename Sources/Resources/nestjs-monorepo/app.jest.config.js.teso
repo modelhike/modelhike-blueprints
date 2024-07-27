@@ -1,0 +1,21 @@
+const name = "{{module_folder_name}}"
+:
+const {
+  pathsToModuleNameMapper
+} = require('ts-jest');
+:
+const {
+  compilerOptions
+} = require('../../tsconfig.json');
+:
+module.exports = {
+  rootDir: 'src',
+  displayName: name,
+  preset: 'ts-jest',
+  coveragePathIgnorePatterns: ['main.ts', 'node_modules', 'app.module.ts', 'module.ts', 'validator.ts', 'interface.ts'],
+  setupFilesAfterEnv: ['../../../tests/common-initialization.js'],
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: '<rootDir>/../../../',
+  }),
+};
+:

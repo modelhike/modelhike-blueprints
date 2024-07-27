@@ -1,0 +1,37 @@
+# Introduction 
+This backend monorepo is part of {{Product-name}}
+:
+# Modules
+Following microservices are available:
+: for module in modules 
+: set module_folder_name = module.name| lowercase + kebabcase
+- {{module.name}} -> {{module_folder_name}}
+: endfor
+:
+# Folder Structure
+- apps - has all the microservices
+- libs - code shared across the microservices
+- docs - PlantUml Diagrams for all microservices, containing diagrams of the entire module
+:
+# Build and Run
+1. Initial Setup - yarn install
+2. Ensure that the .ENV files are having correct values
+3. Run any microservice, as below:
+
+: for module in modules 
+: set module_folder_name = module.name| lowercase + kebabcase
+
+:
+**To run {{module.name}}:**
+```
+yarn start {{module_folder_name}}
+```
+
+: endfor
+
+: set default_module_folder_name = module-default.name| lowercase + kebabcase
+:
+4. Just running **start** without a microservice name, will start **{{default_module_folder_name}}** microservice
+```
+yarn start
+```

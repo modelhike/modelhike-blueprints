@@ -1,0 +1,58 @@
+: set dbCollection = entity.name | split-camel-to-kebabcase 
+: set-obj-attrib api.cqrs-name 
+Create{{entity.name}}Command
+: endset 
+: set-obj-attrib api.cqrs-handler-name 
+Create{{entity.name}}CommandHandler
+: endset 
+
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { InternalResponse } from 'libs/includes/internal.response';
+import { DBClient } from 'libs/db/db.client';
+import { UserSessionJwt } from 'libs/auth/auth.token';
+import { {{entity.name}} } from 'libs/domain-models/domain.entities';
+:
+export class Create{{entity.name}}Command {
+  constructor(
+    public readonly payload: {{entity.name}},
+    public readonly token: UserSessionJwt,
+  ) {}
+:
+  async run(): Promise<InternalResponse> {
+:
+    let response: InternalResponse;
+    const client = new DBClient(this.token);
+:
+    try {
+        await client.connect('{{dbCollection}}');
+
+        const createResponse = await client.insert(this.payload);
+        if (createResponse?.result?.insertedId) {
+            response = InternalResponse.success();
+        } else {
+            response = createResponse;
+        }
+:
+    } catch (error) {
+      response = InternalResponse.exception(error);
+    } finally {
+      await client.close();
+    }
+:
+    return response;
+  }
+}
+:
+
+@CommandHandler(Create{{entity.name}}Command)
+export class Create{{entity.name}}CommandHandler
+  implements ICommandHandler<Create{{entity.name}}Command>
+{
+  async execute(command: Create{{entity.name}}Command): Promise<InternalResponse> {
+    try {
+      return await command.run();
+    } catch (error: any) {
+      return InternalResponse.exception(error);
+    }
+  }
+}

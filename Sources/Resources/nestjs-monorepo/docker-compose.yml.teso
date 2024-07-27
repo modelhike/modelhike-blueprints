@@ -1,0 +1,29 @@
+:
+services:
+: for module in modules 
+: set module_folder_name = module.name| lowercase + kebabcase
+
+  {{module_folder_name}}:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - APP_DIR=apps/{{module_folder_name}}/src
+        - NODE_ENV=${NODE_ENV:-dev}
+//    command: nest start {{module_folder_name}} --env '${NODE_ENV}' # Customize command
+    ports:
+      - '{{module.port}}:{{module.port}}'
+    environment:
+      SERVICE_NAME: {{module_folder_name}}
+      DB_URL: ${DATABASE_URL}
+      LOG_LEVEL: ${LOG_LEVEL}
+      LOG_REQUEST: ${LOG_REQUEST}
+      ACCESS_TOKEN_SIGNATURE_KEY: ${ACCESS_TOKEN_SIGNATURE_KEY}
+      ACCESS_TOKEN_EXPIRY_IN_SECONDS: ${ACCESS_TOKEN_EXPIRY_IN_SECONDS}
+      REFRESH_TOKEN_EXPIRY_IN_SECONDS: ${REFRESH_TOKEN_EXPIRY_IN_SECONDS}
+      GUEST_TOKEN_EXPIRES_IN: ${GUEST_TOKEN_EXPIRES_IN}
+    restart: on-failure
+:
+: endfor
+:
+

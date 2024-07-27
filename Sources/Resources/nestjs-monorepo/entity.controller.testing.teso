@@ -1,0 +1,227 @@
+: set entity_name = entity.name | lowercase 
+
+import * as request from 'supertest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, HttpStatus, ExecutionContext, CallHandler } from "@nestjs/common";
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandOkResponse, QueryOkResponse } from 'libs/includes/external.response';
+import { InternalResponse } from 'libs/includes/internal.response';
+import { {{entity.name}}Controller } from './controller';
+:
+const nonExistingId = '000000000000000000000001';
+const existingId = '6673bd8c0fcfd8a21bd15300';
+const authToken = 'Bearer token'
+:
+const dataNotFoundError = {
+  "appCode": 5000,
+  "statusCode": HttpStatus.NOT_FOUND,
+  "status": "Failure",
+  "error": "Data not found!!"
+}
+const invalidRequestError = {
+  appCode: 4000,
+  statusCode: 400,
+  status: 'Invalid',
+  error: 'Invalid Request!!'
+}
+:
+describe('{{entity.name}}Controller (integration)', () => {
+  let app: INestApplication;
+  let commandBus: CommandBus;
+  let queryBus: QueryBus;
+:
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      controllers: [{{entity.name}}Controller],
+      providers: [
+        {
+          provide: CommandBus,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: QueryBus,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+:
+    app = moduleFixture.createNestApplication();
+    await app.init();
+:
+    commandBus = moduleFixture.get<CommandBus>(CommandBus);
+    queryBus = moduleFixture.get<QueryBus>(QueryBus);
+  });
+:
+  afterAll(async () => {
+    await app.close();
+  });
+:
+: for api in apis
+
+: if api.is-create
+:
+  it('/POST {{entity_name}}', async () => {
+    const payload = { {{ api.entity | sample-json }} }
+    const busResponse = InternalResponse.success()
+    const response = { ...CommandOkResponse }
+:
+    jest.spyOn(commandBus, 'execute').mockResolvedValue(busResponse);
+:
+    await request(app.getHttpServer())
+      .post('/{{entity_name}}')
+      .set('Authorization', authToken)
+      .send(payload)
+      .expect(HttpStatus.OK)
+      .expect(response);
+  });
+:
+  it("POST /{{entity_name}} existing resource", async () => {
+    const payload = { {{ api.entity | sample-json }} }
+    const busResponse = InternalResponse.success()
+    const response = { ...CommandOkResponse }
+:
+    jest.spyOn(commandBus, 'execute').mockResolvedValue(busResponse);
+:
+    await request(app.getHttpServer())
+      .post("/{{entity_name}}")
+      .set('Authorization', authToken)
+      .send(payload)
+      .expect(HttpStatus.OK)
+      .expect(response)
+      .then(function () {
+          request(app.getHttpServer())
+          .post("/{{entity_name}}")
+          .set('Authorization', authToken)
+          .send(payload)
+          .expect(HttpStatus.CONFLICT);
+      });
+  });
+
+: else if api.is-update
+:
+  it('/PUT {{entity_name}} existing', async () => {
+    const payload = {
+    "_id": existingId, {{api.entity | sample-json }}
+    } 
+    const busResponse = InternalResponse.success()
+    const response = { ...CommandOkResponse }
+:
+    jest.spyOn(commandBus, 'execute').mockResolvedValue(busResponse);
+:
+    await request(app.getHttpServer())
+      .put('/{{entity_name}}')
+      .set('Authorization', authToken)
+      .send(payload)
+      .expect(HttpStatus.OK)
+      .expect(response);
+  });
+
+:
+  it('/PUT {{entity_name}} non-existing', async () => {
+    const payload = {
+    "_id": nonExistingId, {{api.entity | sample-json }}
+    }
+    const busResponse = InternalResponse.noData()
+    const response = dataNotFoundError
+:
+    jest.spyOn(commandBus, 'execute').mockResolvedValue(busResponse);
+:
+    await request(app.getHttpServer())
+      .put('/{{entity_name}}')
+      .set('Authorization', authToken)
+      .send(payload)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect(response);
+  });
+
+: else if api.is-delete
+:
+  it('/DELETE {{entity_name}}/:id existing', async () => {
+    const id = existingId; // Mock valid object id
+    const busResponse = InternalResponse.success()
+    const response = { ...CommandOkResponse }
+:
+    jest.spyOn(commandBus, 'execute').mockResolvedValue(busResponse);
+:
+    await request(app.getHttpServer())
+      .delete(`/{{entity_name}}/${id}`)
+      .set('Authorization', authToken)
+      .expect(HttpStatus.OK)
+      .expect(response);
+  });
+:
+  it('/DELETE {{entity_name}}/:id non-existing', async () => {
+    const id = nonExistingId; // Mock invalid object id
+    const busResponse = InternalResponse.noData()
+    const response = dataNotFoundError
+:
+    jest.spyOn(commandBus, 'execute').mockResolvedValue(busResponse);
+:
+    await request(app.getHttpServer())
+      .delete(`/{{entity_name}}/${id}`)
+      .set('Authorization', authToken)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect(response);
+  });
+
+: else if api.is-get-by-id
+:
+  it('/GET {{entity_name}}/:id existing', async () => {
+    const id = existingId; // Mock valid object id
+    const obj = { dummy: true }
+    const busResponse = InternalResponse.result(obj);
+:
+    jest.spyOn(queryBus, 'execute').mockResolvedValue(busResponse);
+:
+    const res = await request(app.getHttpServer())
+      .get(`/{{entity_name}}/${existingId}`)
+      .set('Authorization', authToken)
+      .expect(HttpStatus.OK)
+
+      expect(res.body).toEqual(expect.objectContaining({
+        data: expect.anything(),
+        ...QueryOkResponse
+      }));
+  });
+:
+  it("GET /{{entity_name}}/:id non-existing", async () => {
+    const id = nonExistingId; // Mock invalid object id
+    const busResponse = InternalResponse.noData()
+    const response = dataNotFoundError
+:
+    jest.spyOn(queryBus, 'execute').mockResolvedValue(busResponse);
+:
+    await request(app.getHttpServer())
+      .get(`${"/{{entity_name}}"}/${nonExistingId}`)
+      .set('Authorization', authToken)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect(response);
+  });
+
+: else if api.is-get-all
+:
+  it('/GET {{entity_name}}', async () => {
+    const obj = { dummy: true }
+    const busResponse = InternalResponse.result([obj]);
+:
+    jest.spyOn(queryBus, 'execute').mockResolvedValue(busResponse);
+:
+    const res = await request(app.getHttpServer())
+      .get('/{{entity_name}}')
+      .set('Authorization', authToken)
+      .query({ page: 1, limit: 10 })
+      .expect(HttpStatus.OK)
+
+
+      expect(res.body).toEqual(expect.objectContaining({
+        data: expect.arrayContaining( [expect.anything() ]),
+        ...QueryOkResponse
+      }));
+  });
+});
+: endif
+: endfor

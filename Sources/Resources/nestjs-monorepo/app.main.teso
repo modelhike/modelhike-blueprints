@@ -1,0 +1,51 @@
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { Transport } from '@nestjs/microservices';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
+import * as bodyParser from 'body-parser';
+:
+const { PORT = {{module.port}} } = process.env;
+:
+async function bootstrap() {
+  const uri = process.env.DATABASE_URL;
+  const dbName = process.env.DATABASE_NAME;
+:
+  if (!uri || !dbName) {
+    throw new Error('DATABASE_URL and DATABASE_NAME must be set');
+  }
+:  
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true
+  });
+
+:
+  app.use(bodyParser.json({ limit: '16mb' }));
+:
+  app.setGlobalPrefix("api");
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+//      forbidUnknownValues: true,
+    })
+  );
+:
+  app.enableVersioning({
+    type: VersioningType.URI,
+    // defaultVersion: '1',
+    // prefix: 'v',
+  });
+:
+  app.enableCors({
+    allowedHeaders: '*',
+    origin: '*',
+  }); 
+:
+  await app.startAllMicroservices();
+  await app.listen(PORT);
+  return app;
+:
+}
+:
+bootstrap();
+:

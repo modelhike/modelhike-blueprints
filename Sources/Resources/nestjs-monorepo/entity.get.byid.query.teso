@@ -1,0 +1,46 @@
+: set dbCollection = entity.name | split-camel-to-kebabcase 
+: set-obj-attrib api.cqrs-name 
+Get{{entity.name}}Query
+: endset 
+: set-obj-attrib api.cqrs-handler-name 
+Get{{entity.name}}QueryHandler
+: endset 
+
+import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
+import { DBClient } from 'libs/db/db.client';
+import { InternalResponse } from 'libs/includes/internal.response';
+
+:
+export class Get{{entity.name}}Query {
+  constructor(public readonly id: string) {}
+:
+  async run(): Promise<InternalResponse> {
+    let response: InternalResponse;
+    const client = new DBClient();
+:
+    try {
+        await client.connect('{{dbCollection}}');
+
+        response = await client.findById(this.id);
+:
+    } catch (error) {
+      response = InternalResponse.exception(error);
+    } finally {
+      await client.close();
+    }
+:
+    return response;
+  }
+}
+
+:
+@QueryHandler(Get{{entity.name}}Query)
+export class Get{{entity.name}}QueryHandler implements IQueryHandler<Get{{entity.name}}Query> {
+  async execute(query: Get{{entity.name}}Query): Promise<InternalResponse> {
+    try {
+      return await query.run();
+    } catch (error: any) {
+      return InternalResponse.exception(error);
+    }
+  }
+}

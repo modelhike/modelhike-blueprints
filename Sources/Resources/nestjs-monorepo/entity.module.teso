@@ -1,0 +1,24 @@
+: set entity_name = entity.name | lowercase 
+import { Module } from '@nestjs/common';
+import { {{entity.name}}Controller } from './controller';
+import { CqrsModule } from '@nestjs/cqrs';
+//import { AuthModule } from 'libs/auth/auth.module';
+: for api in apis 
+import { {{api.cqrs-handler-name}} } from '{{api.cqrs-file-import-path}}';
+: endfor 
+
+:
+@Module({
+  imports: [
+    CqrsModule,
+    : for api in apis 
+    {{api.cqrs-handler-name}},
+    : endfor 
+//    AuthModule,
+  ],
+  controllers: [{{entity.name}}Controller],
+  providers: [],
+})
+export class {{entity.name}}Module {
+:  
+}

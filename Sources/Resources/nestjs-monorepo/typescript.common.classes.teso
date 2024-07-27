@@ -1,0 +1,12 @@
+: for common in commons 
+// {{ common.name }}
+: for type in common.types 
+export class {{type.name}} {
+: for property in type.properties  
+ {{property.name}}!: {{property | typename}};
+: endfor 
+}
+:
+: endfor 
+
+: endfor 

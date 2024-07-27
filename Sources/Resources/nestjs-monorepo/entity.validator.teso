@@ -1,0 +1,32 @@
+
+import * as Yup from 'yup';
+import { YupSchemaValidator } from 'libs/validation/yup.validator';
+import { BadRequestException } from 'libs/includes/external.response';
+import { {{entity.name}} } from 'libs/domain-models/domain.entities';
+import { {{entity.name}}Schema } from 'libs/validation/yup.domain.entities.schema';
+:
+export class {{entity.name}}Validator {
+:
+  static async validateForCreate(payload: {{entity.name}}) {
+    const validationErrors = await YupSchemaValidator.validate({{entity.name}}Schema, payload);
+    if (validationErrors) {
+      throw new BadRequestException(validationErrors.join(', '));
+    }
+  }
+:
+  static async validateForUpdate(payload: {{entity.name}}) {
+    const idSchema = Yup.object({
+      _id: Yup.string().required(),
+    })
+      .required()
+      .strict()
+      .noUnknown();
+:
+    const newSchema = {{entity.name}}Schema.concat(idSchema);
+:
+    const validationErrors = await YupSchemaValidator.validate(newSchema, payload);
+    if (validationErrors) {
+      throw new BadRequestException(validationErrors.join(', '));
+    }
+  }
+}

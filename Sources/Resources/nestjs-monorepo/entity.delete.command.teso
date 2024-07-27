@@ -1,0 +1,54 @@
+: set dbCollection = entity.name | split-camel-to-kebabcase 
+: set-obj-attrib api.cqrs-name 
+Delete{{entity.name}}Command
+: endset 
+: set-obj-attrib api.cqrs-handler-name 
+Delete{{entity.name}}CommandHandler
+: endset 
+
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { InternalResponse } from 'libs/includes/internal.response';
+import { DBClient } from 'libs/db/db.client';
+import { UserSessionJwt } from 'libs/auth/auth.token';
+import { {{entity.name}} } from 'libs/domain-models/domain.entities';
+
+:
+export class Delete{{entity.name}}Command {
+  constructor(
+    public readonly id: string,
+    public readonly token: UserSessionJwt,
+  ) {}
+:
+  async run(): Promise<InternalResponse> {
+:
+    let response: InternalResponse;
+    const client = new DBClient(this.token);
+:
+    try {
+        await client.connect('{{dbCollection}}');
+
+        response = await client.softDelete(this.id);
+
+    } catch (error) {
+      response = InternalResponse.exception(error);
+    } finally {
+      await client.close();
+    }
+:
+    return response;
+  }
+}
+
+:
+@CommandHandler(Delete{{entity.name}}Command)
+export class Delete{{entity.name}}CommandHandler
+  implements ICommandHandler<Delete{{entity.name}}Command>
+{
+  async execute(command: Delete{{entity.name}}Command): Promise<InternalResponse> {
+    try {
+      return await command.run();
+    } catch (error: any) {
+      return InternalResponse.exception(error);
+    }
+  }
+}

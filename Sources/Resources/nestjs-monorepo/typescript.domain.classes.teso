@@ -1,0 +1,22 @@
+import {
+: for common in commons 
+: for type in common.types 
+{{type.name}},
+: endfor 
+: endfor 
+} from './common.classes';
+:
+
+: for module in modules 
+// {{ module.name }}
+: for type in module.types 
+export class {{type.name}} {
+: for property in type.properties  
+ {{property.name}}!: {{property | typename}};
+: endfor 
+}
+:
+
+: endfor 
+
+: endfor 

@@ -1,0 +1,128 @@
+import * as Yup from 'yup';
+
+:
+export const minLenForOptioninalStrings = 1;
+export const minLenForArrays = 1;
+:
+export const pageLimitValidatorSchema = Yup.object()
+  .shape({
+    page: Yup.number().integer().positive().min(1),
+    limit: Yup.number().integer().positive().min(1).max(100)
+  })
+.strict()
+.noUnknown();
+:
+export const bufferValidator = (value: any) => {
+  if (value !== undefined) {
+    if (Buffer.isBuffer(value) || (typeof value === 'string' && /^<Buffer [0-9a-fA-F]+>$/.test(value))) {
+      return true;
+    }
+    return false;
+  }
+  return true;
+};
+:
+
+: func render-custom-type( name, property )
+  //: spaceless
+  : if property.is-array 
+    : if property.is-required 
+    {{property.name}}: Yup.array().of({{name}}Schema).min(minLenForArrays).required(),
+    : else  
+    {{property.name}}: Yup.array().of({{name}}Schema).min(minLenForArrays),
+    : endif 
+  : else 
+    : if property.is-required 
+    {{property.name}}: {{name}}Schema.required(),
+    : else  
+    {{property.name}}: {{name}}Schema,
+    : endif 
+  : endif 
+  //: endspaceless
+: endfunc 
+
+: func render-type-schema(type)
+
+export const {{type.name}}Schema = Yup.object()
+.shape({
+: for prop in type.properties
+  : set suffix
+    : spaceless
+    : if prop.is-required 
+    .required()
+    : endif 
+    ,
+    : endspaceless
+  :  endset 
+: if prop.is-number  
+    {{prop.name}}: Yup.number(){{suffix}}
+: else if prop.is-bool 
+    {{prop.name}}: Yup.boolean(){{suffix}}
+: else if prop.is-date 
+    {{prop.name}}: Yup.string().datetime(){{suffix}}
+: else if prop.is-buffer 
+    {{prop.name}}: Yup.mixed().test('is-buffer', '{{prop.name}} must be a Buffer', bufferValidator){{suffix}}
+: else if prop.is-any 
+    {{prop.name}}: Yup.mixed(){{suffix}}
+: else if prop.is-string 
+  : set suffix 
+  : if prop.has-attrib-oneOf
+    .oneOf({{prop.attrib-oneOf}})
+  : endif 
+  : endset 
+  : if prop.is-array 
+    : set suffix 
+      : spaceless
+      : if prop.is-required
+      .required(){{suffix}},
+      : else
+      {{suffix}},
+      : endif 
+      : endspaceless
+    :  endset 
+    {{prop.name}}: Yup.array().of(Yup.string().min(minLenForOptioninalStrings).nullable()).min(minLenForArrays){{suffix}}
+  : else 
+    : if prop.is-required 
+    {{prop.name}}: Yup.string().required(){{suffix}},
+    : else  
+    {{prop.name}}: Yup.string().min(minLenForOptioninalStrings).nullable(){{suffix}},
+    : endif 
+  : endif 
+: else if prop.is-id 
+// dont generate schema for _id property
+//  : if prop.is-array 
+//    {{prop.name}}: Yup.array().of(Yup.string().min(minLenForOptioninalStrings).nullable()).min(minLenForArrays){{suffix}}
+//  : else 
+//    : if prop.is-required 
+//    {{prop.name}}: Yup.string().required(),
+//    : else  
+//    {{prop.name}}: Yup.string().min(minLenForOptioninalStrings).nullable(),
+//    : endif 
+//  : endif 
+: else if prop.is-reference 
+  : call render-custom-type( name : "Reference", property:  prop )
+: else if prop.is-extended-reference 
+  : call render-custom-type( name : "ExtendedReference", property: prop )
+: else if prop.is-coded-value 
+  : call render-custom-type( name : "CodedValue", property: prop )
+: else if prop.is-custom-type 
+  : call render-custom-type( name : prop.custom-type, property: prop )
+: else 
+--UnKnown--
+: endif 
+: endfor 
+})
+.strict()
+.noUnknown();
+:
+
+: endfunc
+
+: for common in commons 
+// {{ common.name }}
+
+: for type in common.types 
+: call render-type-schema(type: type)
+: endfor 
+
+: endfor 

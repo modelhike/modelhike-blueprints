@@ -1,0 +1,147 @@
+-----
+Product-name : GenProduct
+Company-name : WowCompany
+-----
+
+: console-log "Generating..."
+
+: set working_dir = "/libs/domain-models"
+
+: render-file "domain.entities.ts" with-template "typescript.domain.classes"
+: render-file "common.classes.ts" with-template "typescript.common.classes"
+
+: set working_dir = "/libs/validation"
+
+: render-file "yup.domain.entities.schema.ts" with-template "yup.domain.classes"
+: render-file "yup.common.classes.schema.ts" with-template "yup.common.classes"
+
+
+: for module in modules 
+: set module_folder_name = module.name| lowercase + kebabcase
+
+: for entity in module.entities 
+: set submodule_folder_name = entity.given-name| lowercase + kebabcase
+: set-obj-attrib entity.folder_name = submodule_folder_name
+
+: set apis = module | apis-for(entity.name)
+
+: set working_dir 
+/apps/{{module_folder_name}}/src/{{submodule_folder_name}}/crud
+: endset 
+
+: for api in apis 
+
+: if api.is-create 
+
+	: set file_name
+	create.{{entity.name | lowercase}}.ts
+	: endset 
+
+	: set-obj-attrib api.cqrs-filename = file_name 
+	: set-obj-attrib api.cqrs-file-import-path 
+	./crud/create.{{entity.name | lowercase}}
+	: endset 
+
+	: render-file file_name with-template "entity.create.command"
+
+: else if api.is-update 
+
+	: set file_name 
+	update.{{entity.name | lowercase}}.ts
+	: endset 
+
+	: set-obj-attrib api.cqrs-filename = file_name 
+	: set-obj-attrib api.cqrs-file-import-path 
+	./crud/update.{{entity.name | lowercase}}
+	: endset 
+	: render-file file_name with-template "entity.update.command"
+
+: else if api.is-delete 
+
+	: set file_name 
+	delete.{{entity.name | lowercase}}.ts
+	: endset 
+
+	: set-obj-attrib api.cqrs-filename = file_name 
+	: set-obj-attrib api.cqrs-file-import-path 
+	./crud/delete.{{entity.name | lowercase}}
+	: endset 
+	: render-file file_name with-template "entity.delete.command"
+
+: else if api.is-get-by-id 
+
+	: set file_name 
+	get.{{entity.name | lowercase}}.byId.ts
+	: endset 
+	: set-obj-attrib api.cqrs-filename = file_name 
+	: set-obj-attrib api.cqrs-file-import-path 
+	./crud/get.{{entity.name | lowercase}}.byId
+	: endset 
+	: render-file file_name with-template "entity.get.byid.query"
+
+: else if api.is-get-all 
+
+	: set file_name 
+	find.{{entity.name | lowercase+plural}}.ts
+	: endset 
+
+	: set-obj-attrib api.cqrs-filename = file_name 
+	: set-obj-attrib api.cqrs-file-import-path 
+	./crud/find.{{entity.name | lowercase+plural}}
+	: endset 
+
+	: render-file file_name with-template "entity.get.all.query"
+
+: endif 
+
+
+: endfor // apis for loop
+
+: set working_dir 
+/apps/{{module_folder_name}}/src/{{submodule_folder_name}}
+: endset 
+
+: render-file "controller.ts" with-template "entity.controller"
+: render-file "controller.test.ts" with-template "entity.controller.testing"
+: render-file "module.ts" with-template "entity.module"
+
+: render-file "validator.ts" with-template "entity.validator"
+: render-file "requests.http" with-template "api.invoke.rest.client"
+
+
+: endfor // entity for loop
+
+: set working_dir 
+/apps/{{module_folder_name}}/src/
+: endset 
+
+: render-file "app.module.ts" with-template "app.module"
+: render-file "main.ts" with-template "app.main"
+
+: set working_dir 
+/apps/{{module_folder_name}}/
+: endset 
+
+: render-file "tsconfig.app.json" with-template "app.tsconfig.json"
+: render-file "jest.config.js" with-template "app.jest.config.js"
+
+// generate documentation
+: set working_dir = "/docs/class-diag" 
+: set file_name 
+{{module_folder_name}}.puml
+: endset 
+
+: render-file file_name with-template "plantuml.classes"
+
+: endfor // modules for loop
+
+: set working_dir = "/" 
+
+: copy-folder "libs"
+: copy-folder "monorepo" to working_dir
+
+: render-file "README.md" with-template "README.md"
+: render-file "docker-compose.yml" with-template "docker-compose.yml"
+: render-file "package.json" with-template "package.json"
+: render-file "nest-cli.json" with-template "nest-cli.json"
+: render-file "jest.config.ts" with-template "jest.config.ts"

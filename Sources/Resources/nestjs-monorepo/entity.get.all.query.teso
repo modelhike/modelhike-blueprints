@@ -1,0 +1,89 @@
+: set dbCollection = entity.name | split-camel-to-kebabcase 
+: set-obj-attrib api.cqrs-name 
+Find{{entity.name}}ByQuery
+: endset 
+: set-obj-attrib api.cqrs-handler-name 
+Find{{entity.name}}QueryHandler
+: endset 
+
+import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
+import { DBClient } from 'libs/db/db.client';
+import { InternalResponse } from 'libs/includes/internal.response';
+
+: func getQueryParamString( propMapping, entity )
+  : spaceless
+  : set property = propMapping | get-last-recursive-prop( entity.name )
+  : if property 
+    : if property.is-date
+      string
+    : else
+      : if param.has-multiple-params
+        Set<{{ property | typename }}>
+      : else
+        {{ property | typename }}
+      : endif 
+    : endif 
+  : else
+    any
+  : endif 
+  : endspaceless
+: endfunc 
+
+:
+export class Find{{entity.name}}ByQuery {
+  constructor(
+    public readonly page: number,
+    public readonly limit: number,
+  : for param in api.query-params 
+    public readonly {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity :  entity ) }}=,
+  : if param.has-second-param-name 
+    public readonly {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity :  entity ) }}=,
+  : endif 
+  : endfor 
+ ) {}
+: 
+  async run(): Promise<InternalResponse> {
+    let response: InternalResponse;
+    const client = new DBClient();
+:
+    try {
+        await client.connect('{{dbCollection}}');
+:
+        const query: Map<string, any> = await this.buildQuery();
+:
+        response = await client.findAllByPage({ page: this.page, limit: this.limit, query: query });
+ :   
+      } catch (error) {
+        response = InternalResponse.exception(error);
+      } finally {
+        await client.close();
+      }
+:
+      return response;
+    }
+:
+    private async buildQuery(): Promise<Map<string, any>> {
+      const query = new Map<string, any>();
+:
+  : for param in api.query-params 
+    {{ param | filter-string }}
+  :
+  : endfor 
+:
+      return query;
+    }
+:
+
+}
+
+:
+@QueryHandler(Find{{entity.name}}ByQuery)
+export class Find{{entity.name}}QueryHandler implements IQueryHandler<Find{{entity.name}}ByQuery> {
+  async execute(query: Find{{entity.name}}ByQuery): Promise<InternalResponse> {
+    try {
+      return await query.run();
+    } catch (error: any) {
+      return InternalResponse.exception(error);
+    }
+  }
+}
