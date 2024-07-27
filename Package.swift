@@ -15,11 +15,14 @@ let package = Package(
     ],
     dependencies: [
         //.package(url: "https://github.com/diagsoup/diagsoup", from: "0.1.0"),
-        .package(path: "../DiagSoup")
+        .package(path: "../diagsoup")
     ],
     targets: [
         .target(
             name: "DiagSoup_Templates",
+            dependencies: [
+                .product(name: "DiagSoup", package: "DiagSoup")
+            ],
             path: "Sources",
             resources: [
                 .copy("Resources/")
