@@ -8,7 +8,7 @@
 import Foundation
 import DiagSoup
 
-public class DSTemplateLoader : ResourceTemplateLoader {
+public class OfficialBlueprintLoader : ResourceBlueprintLoader {
     
     public init(command: String, with ctx: Context) {
         super.init(command: command, bundle: Bundle.module, with: ctx)

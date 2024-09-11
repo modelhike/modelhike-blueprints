@@ -45,9 +45,9 @@ struct Development {
         
         //let templatesPath = ws.basePath / "_gen.templates"
         //let templatesRepo = LocalFileTemplateLoader(command: "nestjs-monorepo", path: templatesPath, with: ws.context)
-        let templatesRepo = DSTemplateLoader(command: "nestjs-monorepo", with: ws.context)
+        let templatesRepo = OfficialBlueprintLoader(command: "nestjs-monorepo", with: ws.context)
         
-        ws.generateCodebase(usingTemplatesFrom: templatesRepo)
+        ws.generateCodebase(usingBlueprintsFrom: templatesRepo)
     }
     
     private static func getCommonTypes() -> InlineCommonTypes {
