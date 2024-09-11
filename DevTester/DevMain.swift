@@ -1,4 +1,4 @@
-import DiagSoup_Templates
+import DiagSoup_Blueprints
 import DiagSoup
 
 @main

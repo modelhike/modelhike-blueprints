@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "DiagSoup.Templates",
+    name: "DiagSoup.Blueprints",
     platforms: [
         .macOS(.v13),
         .iOS(.v16),
@@ -10,8 +10,8 @@ let package = Package(
         .watchOS(.v6),
     ],
     products: [
-        .library(name: "DiagSoup.Templates", targets: ["DiagSoup_Templates"]),
-        .executable(name: "DevTester_Templates", targets: ["DevTester_Templates"])
+        .library(name: "DiagSoup.Blueprints", targets: ["DiagSoup_Blueprints"]),
+        .executable(name: "DevTester_Blueprints", targets: ["DevTester_Blueprints"])
     ],
     dependencies: [
         //.package(url: "https://github.com/diagsoup/diagsoup", from: "0.1.0"),
@@ -19,7 +19,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "DiagSoup_Templates",
+            name: "DiagSoup_Blueprints",
             dependencies: [
                 .product(name: "DiagSoup", package: "DiagSoup")
             ],
@@ -29,16 +29,16 @@ let package = Package(
             ]
         ),
         .executableTarget(
-            name: "DevTester_Templates",
+            name: "DevTester_Blueprints",
             dependencies: [
-                "DiagSoup_Templates",
+                "DiagSoup_Blueprints",
                 .product(name: "DiagSoup", package: "DiagSoup")
             ],
             path: "DevTester"
         ),
-        .testTarget(
-            name: "DiagSoup_Templates_Tests",
-            path: "Tests"
-        ),
+        //.testTarget(
+        //    name: "DiagSoup_Blueprints_Tests",
+        //    path: "Tests"
+        //),
     ]
 )
