@@ -202,7 +202,7 @@ describe('{{entity.name}}Controller (integration)', () => {
       .expect(response);
   });
 
-: else if api.is-get-all
+: else if api.is-list
 :
   it('/GET {{entity_name}}', async () => {
     const obj = { dummy: true }

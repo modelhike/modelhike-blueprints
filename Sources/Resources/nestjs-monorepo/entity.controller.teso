@@ -76,7 +76,7 @@ export class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-get-all
+: else if api.is-list
 
 : func getQueryParamString( propMapping, entity )
   : spaceless

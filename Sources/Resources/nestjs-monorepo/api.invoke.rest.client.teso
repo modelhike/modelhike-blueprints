@@ -40,7 +40,7 @@ Authorization: Bearer TOKEN
 GET {{baseUrlString}}/{{randomID}}
 Authorization: Bearer TOKEN
 :
-: else if api.is-get-all
+: else if api.is-list
 
   : set sample-query = api | sample-query
   : if sample-query

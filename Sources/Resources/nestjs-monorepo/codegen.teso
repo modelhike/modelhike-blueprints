@@ -7,13 +7,13 @@ Company-name : WowCompany
 
 : set working_dir = "/libs/domain-models"
 
-: render-file "domain.entities.ts" with-template "typescript.domain.classes"
-: render-file "common.classes.ts" with-template "typescript.common.classes"
+: render-file "typescript.domain.classes" as "domain.entities.ts"
+: render-file "typescript.common.classes" as "common.classes.ts"
 
 : set working_dir = "/libs/validation"
 
-: render-file "yup.domain.entities.schema.ts" with-template "yup.domain.classes"
-: render-file "yup.common.classes.schema.ts" with-template "yup.common.classes"
+: render-file "yup.domain.classes" as "yup.domain.entities.schema.ts"
+: render-file "yup.common.classes" as "yup.common.classes.schema.ts"
 
 
 : for module in modules 
@@ -42,7 +42,7 @@ Company-name : WowCompany
 	./crud/create.{{entity.name | lowercase}}
 	: endset 
 
-	: render-file file_name with-template "entity.create.command"
+	: render-file "entity.create.command" as file_name
 
 : else if api.is-update 
 
@@ -54,7 +54,7 @@ Company-name : WowCompany
 	: set-obj-attrib api.cqrs-file-import-path 
 	./crud/update.{{entity.name | lowercase}}
 	: endset 
-	: render-file file_name with-template "entity.update.command"
+	: render-file "entity.update.command" as file_name
 
 : else if api.is-delete 
 
@@ -66,7 +66,7 @@ Company-name : WowCompany
 	: set-obj-attrib api.cqrs-file-import-path 
 	./crud/delete.{{entity.name | lowercase}}
 	: endset 
-	: render-file file_name with-template "entity.delete.command"
+	: render-file "entity.delete.command" as file_name
 
 : else if api.is-get-by-id 
 
@@ -77,20 +77,20 @@ Company-name : WowCompany
 	: set-obj-attrib api.cqrs-file-import-path 
 	./crud/get.{{entity.name | lowercase}}.byId
 	: endset 
-	: render-file file_name with-template "entity.get.byid.query"
+	: render-file "entity.get.byid.query" as file_name
 
-: else if api.is-get-all 
+: else if api.is-list
 
 	: set file_name 
-	find.{{entity.name | lowercase+plural}}.ts
+	list.{{entity.name | lowercase+plural}}.ts
 	: endset 
 
 	: set-obj-attrib api.cqrs-filename = file_name 
 	: set-obj-attrib api.cqrs-file-import-path 
-	./crud/find.{{entity.name | lowercase+plural}}
+	./crud/list.{{entity.name | lowercase+plural}}
 	: endset 
 
-	: render-file file_name with-template "entity.get.all.query"
+	: render-file "entity.get.all.query" as file_name
 
 : endif 
 
@@ -101,12 +101,12 @@ Company-name : WowCompany
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}
 : endset 
 
-: render-file "controller.ts" with-template "entity.controller"
-: render-file "controller.test.ts" with-template "entity.controller.testing"
-: render-file "module.ts" with-template "entity.module"
+: render-file "entity.controller" as "controller.ts"
+: render-file "entity.controller.testing" as "controller.test.ts"
+: render-file "entity.module" as "module.ts"
 
-: render-file "validator.ts" with-template "entity.validator"
-: render-file "requests.http" with-template "api.invoke.rest.client"
+: render-file "entity.validator" as "validator.ts"
+: render-file "api.invoke.rest.client" as "requests.http"
 
 
 : endfor // entity for loop
@@ -115,15 +115,15 @@ Company-name : WowCompany
 /apps/{{module_folder_name}}/src/
 : endset 
 
-: render-file "app.module.ts" with-template "app.module"
-: render-file "main.ts" with-template "app.main"
+: render-file "app.module" as "app.module.ts"
+: render-file "app.main" as "main.ts"
 
 : set working_dir 
 /apps/{{module_folder_name}}/
 : endset 
 
-: render-file "tsconfig.app.json" with-template "app.tsconfig.json"
-: render-file "jest.config.js" with-template "app.jest.config.js"
+: render-file "app.tsconfig.json" as "tsconfig.app.json"
+: render-file "app.jest.config.js" as "jest.config.js"
 
 // generate documentation
 : set working_dir = "/docs/class-diag" 
@@ -131,17 +131,17 @@ Company-name : WowCompany
 {{module_folder_name}}.puml
 : endset 
 
-: render-file file_name with-template "plantuml.classes"
+: render-file "plantuml.classes" as file_name
 
 : endfor // modules for loop
 
 : set working_dir = "/" 
 
 : copy-folder "libs"
-: copy-folder "monorepo" to working_dir
+//: copy-folder "monorepo" to working_dir
 
-: render-file "README.md" with-template "README.md"
-: render-file "docker-compose.yml" with-template "docker-compose.yml"
-: render-file "package.json" with-template "package.json"
-: render-file "nest-cli.json" with-template "nest-cli.json"
-: render-file "jest.config.ts" with-template "jest.config.ts"
+//: render-file "README.md"
+: render-file "docker-compose.yml"
+: render-file "package.json"
+: render-file "nest-cli.json"
+: render-file "jest.config.ts"

@@ -20,11 +20,23 @@ struct Development {
         try ws.loadSymbols([.typescript, .mongodb_typescript])
         
         //let modelRepo = LocalFileModelLoader(path: ws.basePath, with: ws.context)
-        let modelRepo = InlineModelLoader(with: ws.context) {
+        let modelRepo = inlineModel(ws)
+        
+        try ws.loadModels(from: modelRepo)
+        
+        //let templatesPath = ws.basePath / "_gen.templates"
+        //let templatesRepo = LocalFileTemplateLoader(command: "nestjs-monorepo", path: templatesPath, with: ws.context)
+        let templatesRepo = OfficialBlueprintLoader(command: "nestjs-monorepo", with: ws.context)
+        
+        ws.generateCodebase(usingBlueprintsFrom: templatesRepo)
+    }
+    
+    private static func inlineModel(_ ws: Workspace) -> InlineModelLoader {
+        return InlineModelLoader(with: ws.context) {
             InlineModel {
                 """
                 # Registry Management
-
+                
                 Registry
                 ========
                 * _id: Id
@@ -40,14 +52,6 @@ struct Development {
             
             getCommonTypes()
         }
-        
-        try ws.loadModels(from: modelRepo)
-        
-        //let templatesPath = ws.basePath / "_gen.templates"
-        //let templatesRepo = LocalFileTemplateLoader(command: "nestjs-monorepo", path: templatesPath, with: ws.context)
-        let templatesRepo = OfficialBlueprintLoader(command: "nestjs-monorepo", with: ws.context)
-        
-        ws.generateCodebase(usingBlueprintsFrom: templatesRepo)
     }
     
     private static func getCommonTypes() -> InlineCommonTypes {
