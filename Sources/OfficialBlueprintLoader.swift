@@ -10,7 +10,7 @@ import DiagSoup
 
 public class OfficialBlueprintLoader : ResourceBlueprintLoader {
     
-    public init(command: String, with ctx: Context) {
-        super.init(command: command, bundle: Bundle.module, with: ctx)
+    public init(blueprint: String, with ctx: Context) {
+        super.init(blueprint: blueprint, bundle: Bundle.module, with: ctx)
     }
 }
