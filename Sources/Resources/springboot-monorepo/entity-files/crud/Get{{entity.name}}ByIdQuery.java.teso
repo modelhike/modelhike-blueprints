@@ -1,0 +1,33 @@
+package {{entity_pkg_name}}.crud;
+:
+import static java.util.logging.Level.FINE;
+:
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Mono;
+import org.springframework.stereotype.Component;
+import {{entity_pkg_name}}.model.*;
+
+:
+@Component
+public class Get{{entity.name}}ByIdQuery {
+:
+  private static final Logger LOG = LoggerFactory.getLogger(Get{{entity.name}}ByIdQuery.class);
+:
+  private final {{entity.name}}Repository repository;
+:
+  @Autowired
+  public Get{{entity.name}}ByIdQuery({{entity.name}}Repository repository) {
+    this.repository = repository;
+  }
+:
+  public Mono<{{entity.name}}> run(String id) {
+:
+    LOG.info("Will get {{entity.name}} info for id={}", id);
+:
+    return repository.findById(id)
+      .map(e -> e);
+  }
+:
+}

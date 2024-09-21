@@ -1,0 +1,122 @@
+: set urlPath = entity.name | split-camel-to-kebabcase + plural
+package {{entity_pkg_name}};
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
+import reactor.core.publisher.*;
+import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
+import org.springframework.stereotype.Controller;
+import {{entity_pkg_name}}.model.*;
+import {{entity_pkg_name}}.crud.*;
+:
+: set entityname_lower
+{{entity.name | lowercase}}
+: endset
+
+@Controller
+public class {{entity.name}}Controller {
+
+  private static final Logger LOG = LoggerFactory.getLogger({{entity.name}}Controller.class);
+
+  @Autowired
+  ApplicationContext ctx;
+:
+  @Autowired
+  ObjectMapper mapper;
+:
+  private FluxSink<{{entity.name}}> {{entityname_lower}}Stream;
+  private ConnectableFlux<{{entity.name}}> {{entityname_lower}}Publisher;
+:
+  @PostConstruct
+  public void initialize() {
+      Flux<{{entity.name}}> publisher = Flux.create(emitter -> {
+          {{entityname_lower}}Stream = emitter;
+      });
+      {{entityname_lower}}Publisher = publisher.publish();
+      {{entityname_lower}}Publisher.connect();
+  }
+:
+  @SubscriptionMapping
+  public ConnectableFlux<{{entity.name}}> {{entity.name | plural}}Subscription() {
+      System.out.println("{{entity.name | plural}}Subscription");
+      return {{entityname_lower}}Publisher;
+  }
+:
+: for api in apis
+
+: if api.is-create
+  @MutationMapping("add{{entity.name}}")
+  public Mono<{{entity.name}}> create{{entity.name}}(@Argument("input") {{entity.name}}Input payload) {
+//      await {{entity.name}}Validator.validateForCreate(payload);
+:
+      var entity = mapper.convertValue(payload, {{entity.name}}.class);
+      var cmd = ctx.getBean(Create{{entity.name}}Command.class);
+      var returnValue  =  cmd.run(Mono.just(entity));
+      {{entityname_lower}}Stream.next(entity);
+      return returnValue;
+  }
+:
+
+: else if api.is-update
+  @MutationMapping("update{{entity.name}}")
+  public Mono<{{entity.name}}> update{{entity.name}}(@Argument("input") {{entity.name}}Input payload) {
+//      await {{entity.name}}Validator.validateForUpdate(payload);
+:
+      var entity = mapper.convertValue(payload, {{entity.name}}.class);
+      var cmd = ctx.getBean(Update{{entity.name}}Command.class);
+      return cmd.run(Mono.just(entity));
+  }
+:
+
+: else if api.is-delete
+  @MutationMapping("delete{{entity.name}}")
+  public Mono<Void> delete{{entity.name}}(@Argument("id") String id) {
+  //    if (!ObjectId.isValid(id)) {
+  //      return ExternalResponse.badRequest('Invalid Request!!');
+  //    }
+:
+      var cmd = ctx.getBean(Delete{{entity.name}}Command.class);
+      return cmd.run(id);
+  }
+:
+
+: else if api.is-get-by-id
+  @QueryMapping("get{{entity.name}}ById")
+  public Mono<{{entity.name}}> get{{entity.name}}ById(@Argument("id") String id) {
+//      if (!ObjectId.isValid(id)) {
+//        return ExternalResponse.badRequest('Invalid Request!!');
+//      }
+:
+      var cmd = ctx.getBean(Get{{entity.name}}ByIdQuery.class);      
+      return cmd.run(id);
+
+  }
+:
+
+: else if api.is-list
+
+  @QueryMapping("getAll{{entity.name | plural}}")
+  public Flux<{{entity.name}}> list{{entity.name | plural}}() {
+//      if (!ObjectId.isValid(id)) {
+//        return ExternalResponse.badRequest('Invalid Request!!');
+//      }
+:
+      var cmd = ctx.getBean(List{{entity.name | plural}}Query.class);      
+      return cmd.run();
+
+  }
+:
+
+: endif 
+: endfor // apis for loop
+:
+}

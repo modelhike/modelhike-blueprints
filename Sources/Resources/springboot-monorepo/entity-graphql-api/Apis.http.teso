@@ -1,0 +1,108 @@
+: set urlPath = entity.name | split-camel-to-kebabcase + plural
+: set randomID = mock.object-id 
+: set baseUrlString 
+{{ "{" }}{baseurl}}
+: endset // workaround: as escaping '{' is not supported #}
+@baseurl = http://localhost:{{module.port}}/graphql
+:
+: for api in apis
+
+: if api.is-create
+
+### Create
+GRAPHQL {{baseUrlString}}
+:
+mutation {
+  add{{entity.name}} (
+    input: {
+: for property in entity.properties  
+    {{property.name}} : {{property | sample-value}}
+: endfor 
+    }
+  )
+    {
+: for property in entity.properties  
+    {{property.name}}
+: endfor 
+    }
+  }
+:
+: else if api.is-update
+
+### Update by id
+GRAPHQL {{baseUrlString}}
+:
+mutation {
+  update{{entity.name}} (
+    input: {
+: for property in entity.properties  
+    {{property.name}} : {{property | sample-value}}
+: endfor 
+    }
+  )
+    {
+: for property in entity.properties  
+    {{property.name}}
+: endfor 
+    }
+  }
+:
+: else if api.is-delete
+
+### Delete by id
+GRAPHQL {{baseUrlString}}
+:
+mutation {
+  delete{{entity.name}}(id : "{{randomID}}")
+}
+:
+: else if api.is-get-by-id
+
+### Get by id
+GRAPHQL {{baseUrlString}}
+:
+query {
+  get{{entity.name}}ById(id : "{{randomID}}") {
+: for property in entity.properties  
+    {{property.name}}
+: endfor 
+  }
+}
+:
+: else if api.is-list
+
+### Get All with filters
+GRAPHQL {{baseUrlString}}
+:
+query {
+  getAll{{entity.name | plural}} {
+: for property in entity.properties  
+    {{property.name}}
+: endfor 
+  }
+}
+:
+### Get All without filters
+GRAPHQL {{baseUrlString}}
+:
+query {
+  getAll{{entity.name | plural}} {
+: for property in entity.properties  
+    {{property.name}}
+: endfor 
+  }
+}
+:
+: endif 
+: endfor // apis for loop
+:
+### Subscriptions
+GRAPHQL {{baseUrlString}}
+:
+subscription {
+    {{entity.name | plural}}Subscription {
+: for property in entity.properties  
+    {{property.name}}
+: endfor 
+    }
+}

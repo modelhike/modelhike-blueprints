@@ -5,32 +5,34 @@ import DiagSoup
 struct Development {
     static func main() {
         do {
-            try genNestJs()
+            try runCodebaseGeneration()
         } catch {
             print(error)
         }
     }
     
-    static func genNestJs() throws {
+    static func runCodebaseGeneration() throws {
         let ws = Workspace();
                 
         ws.basePath = SystemFolder.documents.path / "diagsoup"
         //ws.debugLog.flags.fileGeneration = true
         
-        try ws.loadSymbols([.typescript, .mongodb_typescript])
-        
-        //let modelRepo = LocalFileModelLoader(path: ws.basePath, with: ws.context)
-        let modelRepo = inlineModel(ws)
+        //let blueprint = "nestjs-monorepo"
+        //try ws.loadSymbols([.typescript, .mongodb_typescript])
+        let blueprint = "springboot-monorepo"
+        try ws.loadSymbols([.java])
+
+        let modelRepo = LocalFileModelLoader(path: ws.basePath, with: ws.context)
+        //let modelRepo = inlineModel(ws)
         
         try ws.loadModels(from: modelRepo)
         
-        //let templatesPath = ws.basePath / "_gen.templates"
-        //let templatesRepo = LocalFileTemplateLoader(command: "nestjs-monorepo", path: templatesPath, with: ws.context)
-        let templatesRepo = OfficialBlueprintLoader(blueprint: "nestjs-monorepo", with: ws.context)
-        
+       // let templatesPath = ws.basePath / "_gen.templates"
+        //let templatesRepo = LocalFileBlueprintLoader(blueprint: blueprint, path: templatesPath, with: ws.context)
+        let templatesRepo = OfficialBlueprintLoader(blueprint: blueprint, with: ws.context)
+
         ws.generateCodebase(container: "APIs", usingBlueprintsFrom: templatesRepo)
     }
-    
     private static func inlineModel(_ ws: Workspace) -> InlineModelLoader {
         return InlineModelLoader(with: ws.context) {
             InlineModel {

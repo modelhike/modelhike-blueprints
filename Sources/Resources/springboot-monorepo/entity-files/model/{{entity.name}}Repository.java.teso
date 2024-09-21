@@ -1,0 +1,8 @@
+package {{entity_pkg_name}}.model;
+:
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.stereotype.Repository;
+:
+@Repository
+public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{entity.name}}, String> {
+}

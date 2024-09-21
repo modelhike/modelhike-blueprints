@@ -1,0 +1,14 @@
+: set dbCollection = entity.name | split-camel-to-kebabcase + plural
+package {{entity_pkg_name}}.model;
+:
+import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
+:
+@Data
+@Document(collection = "{{dbCollection}}")
+public class {{entity.name}} {
+: for property in entity.properties  
+  private {{property | typename}} {{property.name}};
+: endfor 
+:
+}

@@ -1,0 +1,30 @@
+# Ignore Maven target directory
+target/
+
+# Ignore IDE configuration files
+.idea/
+*.iml
+
+# Ignore build tool configuration directories
+.gradle/
+mvnw
+mvnw.cmd
+pom.xml
+
+# Ignore source control directories
+.git/
+.gitignore
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+
+# Ignore logs
+*.log
+
+# Ignore temporary files
+*.tmp

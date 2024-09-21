@@ -1,0 +1,32 @@
+package {{module_pkg_name}};
+:
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import reactor.core.publisher.Sinks;
+import java.util.Collections;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.ComponentScan;
+:
+@SpringBootApplication
+//@PropertySource(value = "classpath:/application.yml")
+public class App {
+:
+  private static final Logger LOG = LoggerFactory.getLogger(App.class);
+:
+  public static void main(String[] args) {
+//    Hooks.enableAutomaticContextPropagation();
+:
+    SpringApplication app = new SpringApplication(App.class);
+    ConfigurableApplicationContext ctx = app.run(args);
+:
+    String mongodDbUri = ctx.getEnvironment().getProperty("spring.data.mongodb.uri");
+    String mongodDbName = ctx.getEnvironment().getProperty("spring.data.mongodb.database");
+    LOG.info("Connected to MongoDb -- uri: " + mongodDbUri + " [DB:" + mongodDbName + "]");
+  }
+
+:
+}

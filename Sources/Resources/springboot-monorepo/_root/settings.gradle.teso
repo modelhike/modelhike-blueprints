@@ -1,0 +1,7 @@
+: for module in modules 
+: set module_folder_name = module.name| lowercase + kebabcase
+include ':base-services:{{module_folder_name}}'
+: endfor
+include ':libs'
+
+

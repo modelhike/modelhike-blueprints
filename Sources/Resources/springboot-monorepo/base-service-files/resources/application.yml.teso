@@ -1,0 +1,13 @@
+server:
+  port: {{module.port}}
+:
+spring:
+  data:
+    mongodb:
+      uri: {{db-uri}}
+      database: {{db-database-name}}
+:
+spring.graphql.graphiql.enabled : true
+spring.graphql.graphiql.path : /graphiql
+spring.graphql.path : /graphql
+spring.graphql.websocket.path : /subs

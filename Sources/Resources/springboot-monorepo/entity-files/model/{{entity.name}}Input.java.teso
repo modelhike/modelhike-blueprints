@@ -1,0 +1,11 @@
+package {{entity_pkg_name}}.model;
+:
+import lombok.Data;
+:
+@Data
+public class {{entity.name}}Input {
+: for property in entity.properties  
+  private {{property | typename}} {{property.name}};
+: endfor 
+:
+}

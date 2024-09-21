@@ -1,0 +1,31 @@
+package {{entity_pkg_name}}.crud;
+:
+import static java.util.logging.Level.FINE;
+:
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Mono;
+import org.springframework.stereotype.Component;
+import {{entity_pkg_name}}.model.*;
+
+:
+@Component
+public class Create{{entity.name}}Command {
+:
+  private static final Logger LOG = LoggerFactory.getLogger(Create{{entity.name}}Command.class);
+:
+  private final {{entity.name}}Repository repository;
+:
+  @Autowired
+  public Create{{entity.name}}Command({{entity.name}}Repository repository) {
+    this.repository = repository;
+  }
+:
+  public Mono<{{entity.name}}> run(Mono<{{entity.name}}> input) {
+:
+    return input.flatMap(repository :: insert);
+  }
+:
+
+}

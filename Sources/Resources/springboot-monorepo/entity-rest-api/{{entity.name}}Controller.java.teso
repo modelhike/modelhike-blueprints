@@ -1,0 +1,100 @@
+: set urlPath = entity.name | split-camel-to-kebabcase + plural
+package {{entity_pkg_name}};
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import {{entity_pkg_name}}.model.*;
+import {{entity_pkg_name}}.crud.*;
+:
+@RestController
+@RequestMapping("{{api-base-path}}")
+public class {{entity.name}}Controller {
+
+  private static final Logger LOG = LoggerFactory.getLogger({{entity.name}}Controller.class);
+
+  @Autowired
+  ApplicationContext ctx;
+:
+  @Autowired
+  ObjectMapper mapper;
+:
+: for api in apis
+
+: if api.is-create
+  @PostMapping("/{{urlPath}}")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Mono<{{entity.name}}> create{{entity.name}}(@RequestBody() {{entity.name}}Input payload) {
+//      await {{entity.name}}Validator.validateForCreate(payload);
+:
+      var entity = mapper.convertValue(payload, {{entity.name}}.class);
+      var cmd = ctx.getBean(Create{{entity.name}}Command.class);
+      return cmd.run(Mono.just(entity));
+  }
+:
+
+: else if api.is-update
+  @PutMapping("/{{urlPath}}")
+  @ResponseStatus(HttpStatus.OK)
+  public Mono<{{entity.name}}> update{{entity.name}}(@RequestBody() {{entity.name}}Input payload) {
+//      await {{entity.name}}Validator.validateForUpdate(payload);
+:
+      var entity = mapper.convertValue(payload, {{entity.name}}.class);
+      var cmd = ctx.getBean(Update{{entity.name}}Command.class);
+      return cmd.run(Mono.just(entity));
+  }
+:
+
+: else if api.is-delete
+  @DeleteMapping("/{{urlPath}}/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public Mono<Void> delete{{entity.name}}(@PathVariable String id) {
+  //    if (!ObjectId.isValid(id)) {
+  //      return ExternalResponse.badRequest('Invalid Request!!');
+  //    }
+:
+      var cmd = ctx.getBean(Delete{{entity.name}}Command.class);
+      return cmd.run(id);
+  }
+:
+
+: else if api.is-get-by-id
+  @GetMapping("/{{urlPath}}/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public Mono<{{entity.name}}> get{{entity.name}}ById(@PathVariable String id) {
+//      if (!ObjectId.isValid(id)) {
+//        return ExternalResponse.badRequest('Invalid Request!!');
+//      }
+:
+      var cmd = ctx.getBean(Get{{entity.name}}ByIdQuery.class);      
+      return cmd.run(id);
+
+  }
+:
+
+: else if api.is-list
+
+  @GetMapping("/{{urlPath}}")
+  @ResponseStatus(HttpStatus.OK)
+  public Flux<{{entity.name}}> list{{entity.name | plural}}() {
+//      if (!ObjectId.isValid(id)) {
+//        return ExternalResponse.badRequest('Invalid Request!!');
+//      }
+:
+      var cmd = ctx.getBean(List{{entity.name | plural}}Query.class);      
+      return cmd.run();
+
+  }
+:
+
+: endif 
+: endfor // apis for loop
+:
+
+}

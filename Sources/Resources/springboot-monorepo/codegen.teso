@@ -1,0 +1,65 @@
+-----
+api-base-path : /api/v1
+-----
+
+: console-log "Generating..."
+
+: for module in modules 
+: set working_dir = "/" 
+
+: set module_folder_name = module.name| lowercase + kebabcase
+: set module_pkg_name = module.name| identifiercase + lowercase
+
+: for entity in module.entities 
+: set submodule_folder_name = entity.given-name| lowercase + kebabcase
+//: set-obj-attrib entity.folder_name = submodule_folder_name
+: set entity_pkg_name
+{{module_pkg_name}}.{{entity.name| identifiercase + lowercase}}
+: endset
+
+: set apis = module | apis-for(entity.name)
+
+: set entity_dir 
+/base-services/{{module_folder_name}}/src/{{module_pkg_name}}/{{submodule_folder_name}}/
+: endset 
+
+: render-folder "entity-files" to entity_dir
+//: render-folder "entity-rest-api" to entity_dir
+: render-folder "entity-graphql-api" to entity_dir
+
+: endfor // entity for loop
+
+: set  module_dir 
+/base-services/{{module_folder_name}}/
+: endset 
+
+: render-folder "base-service-files" to module_dir
+
+: call render-graphQl-schema()
+
+// generate documentation
+: set working_dir = "/docs/class-diag" 
+: set file_name 
+{{module_folder_name}}.puml
+: endset 
+
+: render-file "plantuml.classes" as file_name
+
+: endfor // modules for loop
+
+//
+// End of Code
+//
+
+: func render-graphQl-schema()
+    // generate graphQL schema
+    : set working_dir
+    /base-services/{{module_folder_name}}/resources/graphql
+    : endset
+
+    : set file_name 
+    {{module_folder_name}}.graphqls
+    : endset 
+
+    : render-file "graphql-schema-module" as file_name
+: endfunc 

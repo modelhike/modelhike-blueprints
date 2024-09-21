@@ -1,0 +1,63 @@
+: set urlPath = entity.name | split-camel-to-kebabcase + plural
+: set randomID = mock.object-id 
+: set baseUrlString 
+{{ "{" }}{baseurl}}
+: endset // workaround: as escaping '{' is not supported #}
+@baseurl = http://localhost:{{module.port}}/api/v1/{{urlPath}}
+:
+: for api in apis
+
+: if api.is-create
+
+### Create
+POST {{baseUrlString}}
+Content-Type: application/json
+Authorization: Bearer TOKEN
+:
+{ {{ api.entity | sample-json }}
+}
+:
+: else if api.is-update
+
+### Update by id
+PUT {{baseUrlString}}
+Content-Type: application/json
+Authorization: Bearer TOKEN
+:
+{
+    "id": "{{randomID}}",{{api.entity | sample-json }}
+}
+:
+: else if api.is-delete
+
+### Delete by id
+DELETE {{baseUrlString}}/{{randomID}}
+Authorization: Bearer TOKEN
+:
+: else if api.is-get-by-id
+
+### Get by id
+GET {{baseUrlString}}/{{randomID}}
+Authorization: Bearer TOKEN
+:
+: else if api.is-list
+
+  : set sample-query = api | sample-query
+  : if sample-query
+### Get All with filters
+GET {{baseUrlString}}?page=1&limit=10&{{sample-query}}
+Authorization: Bearer TOKEN
+:
+### Get All without filters
+GET {{baseUrlString}}?page=1&limit=10
+Authorization: Bearer TOKEN
+:
+    : else
+### Get All
+GET {{baseUrlString}}?page=1&limit=10
+Authorization: Bearer TOKEN
+:
+  : endif
+
+: endif 
+: endfor // apis for loop
