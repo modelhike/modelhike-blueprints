@@ -6,6 +6,11 @@ spring:
     mongodb:
       uri: {{db-uri}}
       database: {{db-database-name}}
+  webflux:
+    cors:
+      allowed-origins: "{{allowed-cors-url}}"
+      allow-credentials: true
+      max-age: 3600
 :
 spring.graphql.graphiql.enabled : true
 spring.graphql.graphiql.path : /graphiql

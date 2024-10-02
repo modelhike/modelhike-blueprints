@@ -1,7 +1,9 @@
+scalar DateTime
 :
+: if module.has-entities or module.has-dtos
 type Subscription {
 : for entity in module.entities 
-: set apis = module | apis-for(entity.name)
+: set apis = entity | apis
 
 : for api in apis
 : if api.is-list
@@ -9,11 +11,23 @@ type Subscription {
 : endif 
 : endfor // apis for loop
 : endfor // entities for loop
+
+: for entity in module.dtos 
+: set apis = entity | apis
+
+: for api in apis
+: if api.is-list
+  {{entity.name | plural}}Subscription : {{entity.name}}
+: endif 
+: endfor // apis for loop
+: endfor // dtos for loop
 }
+: endif
 :
+: if module.has-entities
 type Mutation {
 : for entity in module.entities 
-: set apis = module | apis-for(entity.name)
+: set apis = entity | apis
 
 : for api in apis
 : if api.is-create
@@ -30,9 +44,11 @@ type Mutation {
 : endfor // entities for loop
 }
 :
+: endif
+
 type Query {
 : for entity in module.entities 
-: set apis = module | apis-for(entity.name)
+: set apis = entity | apis
 
 : for api in apis
 : if api.is-get-by-id
@@ -44,8 +60,21 @@ type Query {
 : endif 
 : endfor // apis for loop
 : endfor // entities for loop
+
+: for entity in module.dtos 
+: set apis = entity | apis
+
+: for api in apis
+: if api.is-get-by-id
+  get{{entity.name}}ById(id: String) : {{entity.name}}
+
+: else if api.is-list
+  getAll{{entity.name | plural}} : [{{entity.name}}]
+
+: endif 
+: endfor // apis for loop
+: endfor // dtos for loop
 }
-:
 :
 : for entity in module.entities 
 type {{entity.name}} {
@@ -60,6 +89,25 @@ type {{entity.name}} {
 :
 input {{entity.name}}Input {
 : for property in entity.properties  
+: set suffix
+  : spaceless
+  : if property.is-object 
+Input
+  : endif
+  : if property.is-required 
+!
+  : endif
+  : endspaceless
+: endset
+ {{property.name}}: {{property | graphql-typename}}{{suffix}}
+: endfor 
+}
+:
+: endfor
+:
+: for dto in module.dtos 
+type {{dto.name}} {
+: for property in dto.properties  
     : if property.is-required 
  {{property.name}}: {{property | graphql-typename}}!
     : else
@@ -68,4 +116,48 @@ input {{entity.name}}Input {
 : endfor 
 }
 :
-: endfor
+input {{dto.name}}Input {
+: for property in dto.properties  
+: set suffix
+  : spaceless
+  : if property.is-object 
+Input
+  : endif
+  : if property.is-required 
+!
+  : endif
+  : endspaceless
+: endset
+ {{property.name}}: {{property | graphql-typename}}{{suffix}}
+: endfor 
+}
+:
+: endfor // dtos for loop
+:
+: for embedded-type in module.embedded-types 
+type {{embedded-type.name}} {
+: for property in embedded-type.properties  
+    : if property.is-required 
+ {{property.name}}: {{property | graphql-typename}}!
+    : else
+ {{property.name}}: {{property | graphql-typename}}
+    : endif
+: endfor 
+}
+:
+input {{embedded-type.name}}Input {
+: for property in embedded-type.properties  
+: set suffix
+  : spaceless
+  : if property.is-object 
+Input
+  : endif
+  : if property.is-required 
+!
+  : endif
+  : endspaceless
+: endset
+ {{property.name}}: {{property | graphql-typename}}{{suffix}}
+: endfor 
+}
+: endfor // embedded type for loop

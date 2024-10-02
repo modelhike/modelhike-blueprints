@@ -1,11 +1,15 @@
 package {{entity_pkg_name}}.model;
 :
+import java.util.Date;
 import lombok.Data;
+
+: if module.has-embedded-types
+import {{module_pkg_name}}.types.*;
+: endif
 :
 @Data
 public class {{entity.name}}Input {
 : for property in entity.properties  
-  private {{property | typename}} {{property.name}};
+  public {{property | typename}} {{property.name}};
 : endfor 
-:
 }

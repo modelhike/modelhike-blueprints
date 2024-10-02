@@ -1,14 +1,26 @@
 : set dbCollection = entity.name | split-camel-to-kebabcase + plural
 package {{entity_pkg_name}}.model;
 :
-import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.Date;
+: if module.has-embedded-types
+import {{module_pkg_name}}.types.*;
+: endif
 :
-@Data
 @Document(collection = "{{dbCollection}}")
 public class {{entity.name}} {
 : for property in entity.properties  
-  private {{property | typename}} {{property.name}};
+  private {{property | typename}} _{{property.name}};
 : endfor 
 :
+: for property in entity.properties  
+  public {{property | typename}} {{property.name}}() {
+    return _{{property.name}};
+  }
+:
+  public void {{property.name}}({{property | typename}} _{{property.name}}) {
+    this._{{property.name}} = _{{property.name}};
+  }
+:
+: endfor
 }

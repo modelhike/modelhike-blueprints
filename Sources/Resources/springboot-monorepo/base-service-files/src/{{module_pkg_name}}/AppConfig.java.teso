@@ -1,0 +1,43 @@
+package {{module_pkg_name}};
+:
+import graphql.scalars.ExtendedScalars;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.graphql.execution.RuntimeWiringConfigurer;
+import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.function.client.WebClient;
+:
+/**
+ * GraphQL subscriptions rely on WebSockets and typically require a non-blocking, reactive architecture,
+ * which is provided by spring-boot-starter-webflux. Adding spring-boot-starter-web can cause the application to default to a servlet container,
+ * which is blocking, thus preventing WebSocket connections required for subscriptions from working properly.
+ *
+ * WebFlux is non-blocking and reactive, and required for WebSocket-based subscriptions.
+ * Spring MVC (brought in by spring-boot-starter-web) is blocking, and doesn't support reactive WebSockets by default, which can break subscriptions.
+ * */
+@Configuration
+@EnableWebFlux
+public class AppConfig implements WebFluxConfigurer {
+:
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        // addMapping("/graphql") ensures the CORS settings apply to your GraphQL endpoint.
+        registry.addMapping("/graphql")
+                .allowedOrigins(CorsConfiguration.ALL)
+                .allowedHeaders(CorsConfiguration.ALL)
+                .allowedMethods(CorsConfiguration.ALL);
+    }
+:
+    @Bean
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
+    }
+:
+    @Bean
+    public RuntimeWiringConfigurer runtimeWiringConfigurer() {
+        return wiringBuilder -> wiringBuilder
+                .scalar(ExtendedScalars.DateTime);
+    }
+}

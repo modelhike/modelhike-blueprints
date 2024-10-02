@@ -2,7 +2,7 @@
 api-base-path : /api/v1
 -----
 
-: console-log "Generating..."
+: console-log "Generating SpringBoot Reactive Apis (monorepo) ..."
 
 : for module in modules 
 : set working_dir = "/" 
@@ -11,16 +11,16 @@ api-base-path : /api/v1
 : set module_pkg_name = module.name| identifiercase + lowercase
 
 : for entity in module.entities 
-: set submodule_folder_name = entity.given-name| lowercase + kebabcase
+: set submodule_pkg_name = entity.name| identifiercase + lowercase
 //: set-obj-attrib entity.folder_name = submodule_folder_name
 : set entity_pkg_name
-{{module_pkg_name}}.{{entity.name| identifiercase + lowercase}}
+{{module_pkg_name}}.{{submodule_pkg_name}}
 : endset
 
-: set apis = module | apis-for(entity.name)
+: set apis = entity | apis
 
 : set entity_dir 
-/base-services/{{module_folder_name}}/src/{{module_pkg_name}}/{{submodule_folder_name}}/
+/base-services/{{module_folder_name}}/src/{{module_pkg_name}}/{{submodule_pkg_name}}/
 : endset 
 
 : render-folder "entity-files" to entity_dir
@@ -28,6 +28,42 @@ api-base-path : /api/v1
 : render-folder "entity-graphql-api" to entity_dir
 
 : endfor // entity for loop
+
+: ----------- embedded types -------------
+: for embedded-type in module.embedded-types 
+: set embedded_type_pkg_name
+{{module_pkg_name}}.types
+: endset
+
+: set embedded_type_dir 
+/base-services/{{module_folder_name}}/src/{{module_pkg_name}}/types/
+: endset 
+:
+: render-folder "embedded-type-files" to embedded_type_dir
+:
+: endfor // embedded type for loop
+
+: ----------- dtos section ---------------
+
+: for entity in module.dtos 
+: set submodule_pkg_name = entity.name|  identifiercase + lowercase
+
+//: set-obj-attrib entity.folder_name = submodule_folder_name
+: set entity_pkg_name
+{{module_pkg_name}}.{{submodule_pkg_name}}
+: endset
+
+: set apis = entity | apis
+
+: set entity_dir 
+/base-services/{{module_folder_name}}/src/{{module_pkg_name}}/{{submodule_pkg_name}}/
+: endset 
+
+: render-folder "entity-files" to entity_dir
+//: render-folder "entity-rest-api" to entity_dir
+: render-folder "entity-graphql-api" to entity_dir
+
+: endfor // dtos for loop
 
 : set  module_dir 
 /base-services/{{module_folder_name}}/

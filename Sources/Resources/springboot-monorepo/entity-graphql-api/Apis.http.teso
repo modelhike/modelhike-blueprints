@@ -15,15 +15,11 @@ GRAPHQL {{baseUrlString}}
 mutation {
   add{{entity.name}} (
     input: {
-: for property in entity.properties  
-    {{property.name}} : {{property | sample-value}}
-: endfor 
+: call print-mutation-field-values(props: entity.properties)
     }
   )
     {
-: for property in entity.properties  
-    {{property.name}}
-: endfor 
+: call print-query-fields(props: entity.properties)
     }
   }
 :
@@ -35,15 +31,12 @@ GRAPHQL {{baseUrlString}}
 mutation {
   update{{entity.name}} (
     input: {
-: for property in entity.properties  
-    {{property.name}} : {{property | sample-value}}
-: endfor 
+: call print-mutation-field-values(props: entity.properties)
+
     }
   )
     {
-: for property in entity.properties  
-    {{property.name}}
-: endfor 
+: call print-query-fields(props: entity.properties)
     }
   }
 :
@@ -63,9 +56,7 @@ GRAPHQL {{baseUrlString}}
 :
 query {
   get{{entity.name}}ById(id : "{{randomID}}") {
-: for property in entity.properties  
-    {{property.name}}
-: endfor 
+  : call print-query-fields(props: entity.properties)
   }
 }
 :
@@ -76,9 +67,7 @@ GRAPHQL {{baseUrlString}}
 :
 query {
   getAll{{entity.name | plural}} {
-: for property in entity.properties  
-    {{property.name}}
-: endfor 
+  : call print-query-fields(props: entity.properties)
   }
 }
 :
@@ -87,9 +76,7 @@ GRAPHQL {{baseUrlString}}
 :
 query {
   getAll{{entity.name | plural}} {
-: for property in entity.properties  
-    {{property.name}}
-: endfor 
+  : call print-query-fields(props: entity.properties)
   }
 }
 :
@@ -101,8 +88,28 @@ GRAPHQL {{baseUrlString}}
 :
 subscription {
     {{entity.name | plural}}Subscription {
-: for property in entity.properties  
-    {{property.name}}
-: endfor 
+  : call print-query-fields(props: entity.properties)
     }
 }
+
+
+: --------------
+: func print-query-fields (props)
+: for property in props
+    : if property.is-object 
+    : set obj = property.obj-type | get-object
+    {{property.name}} {
+    : call print-query-fields(props: obj.properties)
+    }
+    : else
+    {{property.name}}
+    : endif
+
+: endfor 
+: endfunc
+
+: func print-mutation-field-values (props)
+: for property in props
+    {{property.name}} : {{property | sample-value}}
+: endfor 
+: endfunc

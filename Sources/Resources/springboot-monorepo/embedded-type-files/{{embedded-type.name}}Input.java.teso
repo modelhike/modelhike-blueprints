@@ -1,0 +1,12 @@
+package {{embedded_type_pkg_name}};
+:
+import java.util.Date;
+import lombok.Data;
+
+:
+@Data
+public class {{embedded-type.name}}Input {
+: for property in embedded-type.properties  
+  public {{property | typename}} {{property.name}};
+: endfor 
+}
