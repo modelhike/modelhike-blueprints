@@ -12,33 +12,31 @@
 ### Create
 GRAPHQL {{baseUrlString}}
 :
-mutation {
-  add{{entity.name}} (
-    input: {
-: call print-mutation-field-values(props: entity.properties)
-    }
-  )
-    {
+mutation add{{entity.name}}($input: {{entity.name}}Input) {
+  add{{entity.name}} (input: $input) {
 : call print-query-fields(props: entity.properties)
     }
   }
+:
+{
+   "input": { {{api.entity | sample-json }} }
+}
 :
 : else if api.is-update
 
 ### Update by id
 GRAPHQL {{baseUrlString}}
 :
-mutation {
-  update{{entity.name}} (
-    input: {
-: call print-mutation-field-values(props: entity.properties)
-
-    }
-  )
-    {
+mutation update{{entity.name}}($input: {{entity.name}}Input) {
+  update{{entity.name}} (input: $input) {
 : call print-query-fields(props: entity.properties)
     }
   }
+:
+{
+   "input": { 
+    "_id": "{{randomID}}",{{api.entity | sample-json }} }
+}
 :
 : else if api.is-delete
 
@@ -105,11 +103,5 @@ subscription {
     {{property.name}}
     : endif
 
-: endfor 
-: endfunc
-
-: func print-mutation-field-values (props)
-: for property in props
-    {{property.name}} : {{property | sample-value}}
 : endfor 
 : endfunc
