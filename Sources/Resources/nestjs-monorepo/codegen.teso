@@ -3,7 +3,7 @@ Product-name : GenProduct
 Company-name : WowCompany
 -----
 
-: console-log "Generating..."
+: console-log "Generating NestJs Apis (monorepo) ..."
 
 : set working_dir = "/libs/domain-models"
 
@@ -23,7 +23,7 @@ Company-name : WowCompany
 : set submodule_folder_name = entity.given-name| lowercase + kebabcase
 : set-obj-attrib entity.folder_name = submodule_folder_name
 
-: set apis = module | apis-for(entity.name)
+: set apis = entity | apis
 
 : set working_dir 
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}/crud
