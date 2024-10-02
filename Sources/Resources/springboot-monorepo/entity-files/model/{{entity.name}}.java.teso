@@ -3,24 +3,26 @@ package {{entity_pkg_name}}.model;
 :
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
+import lombok.Data;
 : if module.has-embedded-types
 import {{module_pkg_name}}.types.*;
 : endif
 :
+@Data
 @Document(collection = "{{dbCollection}}")
 public class {{entity.name}} {
 : for property in entity.properties  
-  private {{property | typename}} _{{property.name}};
+  private {{property | typename}} {{property.name}};
 : endfor 
 :
-: for property in entity.properties  
-  public {{property | typename}} {{property.name}}() {
-    return _{{property.name}};
-  }
-:
-  public void {{property.name}}({{property | typename}} _{{property.name}}) {
-    this._{{property.name}} = _{{property.name}};
-  }
-:
-: endfor
+// : for property in entity.properties  
+//   public {{property | typename}} {{property.name}}() {
+//     return _{{property.name}};
+//   }
+// :
+//   public void {{property.name}}({{property | typename}} _{{property.name}}) {
+//     this._{{property.name}} = _{{property.name}};
+//   }
+// :
+// : endfor
 }

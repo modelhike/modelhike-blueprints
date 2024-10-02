@@ -1,6 +1,6 @@
 package {{entity_pkg_name}}.model;
 :
-import java.util.Date;
+import java.time.OffsetDateTime;
 import lombok.Data;
 
 : if module.has-embedded-types
@@ -10,6 +10,10 @@ import {{module_pkg_name}}.types.*;
 @Data
 public class {{entity.name}}Input {
 : for property in entity.properties  
+: if property.is-date
+  public OffsetDateTime {{property.name}};
+: else
   public {{property | typename}} {{property.name}};
+: endif
 : endfor 
 }

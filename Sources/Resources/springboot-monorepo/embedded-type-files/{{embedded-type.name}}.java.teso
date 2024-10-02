@@ -1,21 +1,23 @@
 package {{embedded_type_pkg_name}};
 :
 import java.util.Date;
+import lombok.Data;
 
 :
+@Data
 public class {{embedded-type.name}} {
 : for property in embedded-type.properties  
-  private {{property | typename}} _{{property.name}};
+  private {{property | typename}} {{property.name}};
 : endfor 
 :
-: for property in embedded-type.properties  
-  public {{property | typename}} {{property.name}}() {
-    return _{{property.name}};
-  }
-:
-  public void {{property.name}}({{property | typename}} _{{property.name}}) {
-	this._{{property.name}} = _{{property.name}};
-  }
-:
-: endfor
+// : for property in embedded-type.properties  
+//   public {{property | typename}} {{property.name}}() {
+//     return _{{property.name}};
+//   }
+// :
+//   public void {{property.name}}({{property | typename}} _{{property.name}}) {
+// 	this._{{property.name}} = _{{property.name}};
+//   }
+// :
+// : endfor
 }
