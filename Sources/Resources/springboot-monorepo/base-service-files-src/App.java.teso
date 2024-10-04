@@ -27,6 +27,5 @@ public class App {
     String mongodDbName = ctx.getEnvironment().getProperty("spring.data.mongodb.database");
     LOG.info("Connected to MongoDb -- uri: " + mongodDbUri + " [DB:" + mongodDbName + "]");
   }
-
 :
 }

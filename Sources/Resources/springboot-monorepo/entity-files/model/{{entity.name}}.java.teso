@@ -3,6 +3,7 @@ package {{entity_pkg_name}}.model;
 :
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
+import java.util.ArrayList;
 import lombok.Data;
 : if module.has-embedded-types
 import {{module_pkg_name}}.types.*;
@@ -12,7 +13,11 @@ import {{module_pkg_name}}.types.*;
 @Document(collection = "{{dbCollection}}")
 public class {{entity.name}} {
 : for property in entity.properties  
+: if property.is-array
+  private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
+: else
   private {{property | typename}} {{property.name}};
+: endif
 : endfor 
 :
 // : for property in entity.properties  

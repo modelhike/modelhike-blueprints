@@ -1,13 +1,18 @@
 package {{embedded_type_pkg_name}};
 :
 import java.util.Date;
+import java.util.ArrayList;
 import lombok.Data;
 
 :
 @Data
 public class {{embedded-type.name}} {
 : for property in embedded-type.properties  
+: if property.is-array
+  private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
+: else
   private {{property | typename}} {{property.name}};
+: endif
 : endfor 
 :
 // : for property in embedded-type.properties  
