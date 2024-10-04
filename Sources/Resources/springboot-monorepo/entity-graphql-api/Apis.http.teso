@@ -12,8 +12,8 @@
 ### Create
 GRAPHQL {{baseUrlString}}
 :
-mutation add{{entity.name}}($input: {{entity.name}}Input) {
-  add{{entity.name}} (input: $input) {
+mutation {{api.name}}($input: {{entity.name}}Input) {
+  {{api.name}} (input: $input) {
 : call print-query-fields(props: entity.properties)
     }
   }
@@ -27,8 +27,8 @@ mutation add{{entity.name}}($input: {{entity.name}}Input) {
 ### Update by id
 GRAPHQL {{baseUrlString}}
 :
-mutation update{{entity.name}}($input: {{entity.name}}Input) {
-  update{{entity.name}} (input: $input) {
+mutation {{api.name}}($input: {{entity.name}}Input) {
+  {{api.name}} (input: $input) {
 : call print-query-fields(props: entity.properties)
     }
   }
@@ -44,7 +44,7 @@ mutation update{{entity.name}}($input: {{entity.name}}Input) {
 GRAPHQL {{baseUrlString}}
 :
 mutation {
-  delete{{entity.name}}(id : "{{randomID}}")
+  {{api.name}}(_id : "{{randomID}}")
 }
 :
 : else if api.is-get-by-id
@@ -53,7 +53,7 @@ mutation {
 GRAPHQL {{baseUrlString}}
 :
 query {
-  get{{entity.name}}ById(id : "{{randomID}}") {
+  {{api.name}}(_id : "{{randomID}}") {
   : call print-query-fields(props: entity.properties)
   }
 }
@@ -64,7 +64,7 @@ query {
 GRAPHQL {{baseUrlString}}
 :
 query {
-  getAll{{entity.name | plural}} {
+  {{api.name}} {
   : call print-query-fields(props: entity.properties)
   }
 }
@@ -73,22 +73,35 @@ query {
 GRAPHQL {{baseUrlString}}
 :
 query {
-  getAll{{entity.name | plural}} {
+  {{api.name}} {
   : call print-query-fields(props: entity.properties)
   }
 }
 :
-: endif 
-: endfor // apis for loop
-:
+: else if api.is-push-data
+
 ### Subscriptions
 GRAPHQL {{baseUrlString}}
 :
 subscription {
-    {{entity.name | plural}}Subscription {
+{{api.name}} {
   : call print-query-fields(props: entity.properties)
-    }
+  }
 }
+
+: else if api.is-push-datalist
+
+### Subscriptions
+GRAPHQL {{baseUrlString}}
+:
+subscription {
+{{api.name}} {
+  : call print-query-fields(props: entity.properties)
+  }
+}
+: endif 
+: endfor // apis for loop
+:
 
 
 : --------------

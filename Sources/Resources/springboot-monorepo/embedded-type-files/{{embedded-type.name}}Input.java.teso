@@ -1,6 +1,11 @@
+-----
+/include-if : module.has-mutation-apis
+-----
+
 package {{embedded_type_pkg_name}};
 :
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import lombok.Data;
 
 :
@@ -9,8 +14,10 @@ public class {{embedded-type.name}}Input {
 : for property in embedded-type.properties  
 : if property.is-date
   public OffsetDateTime {{property.name}};
+: else if property.is-array
+  private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
 : else
-  public {{property | typename}} {{property.name}};
+  private {{property | typename}} {{property.name}};
 : endif
 : endfor 
 }

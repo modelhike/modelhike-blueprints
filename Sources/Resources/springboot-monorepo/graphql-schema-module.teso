@@ -1,82 +1,53 @@
 scalar DateTime
 :
-: if module.has-entities or module.has-dtos
+: if module.has-push-apis
 type Subscription {
-: for entity in module.entities 
-: set apis = entity | apis
-
-: for api in apis
-: if api.is-list
-  {{entity.name | plural}}Subscription : {{entity.name}}
-: endif 
-: endfor // apis for loop
-: endfor // entities for loop
-
-: for entity in module.dtos 
-: set apis = entity | apis
-
-: for api in apis
-: if api.is-list
-  {{entity.name | plural}}Subscription : {{entity.name}}
-: endif 
-: endfor // apis for loop
-: endfor // dtos for loop
-}
+: for api in module.push-apis 
+: if api.is-push-datalist
+  {{api.name}} : [{{api.return-type}}]
+: else
+  {{api.name}} : {{api.return-type}}
 : endif
+: endfor // apis for loop
+}
 :
-: if module.has-entities
-type Mutation {
-: for entity in module.entities 
-: set apis = entity | apis
+: endif
 
-: for api in apis
+: if module.has-mutation-apis
+type Mutation {
+: for api in module.mutation-apis 
 : if api.is-create
-  add{{entity.name}}(input: {{entity.name}}Input): {{entity.name}}
+  {{api.name}}(input: {{api.input-type}}Input!): {{api.return-type}}
 
 : else if api.is-update
-  update{{entity.name}}(input: {{entity.name}}Input): {{entity.name}}
+  {{api.name}}(input: {{api.input-type}}Input!): {{api.return-type}}
 
 : else if api.is-delete
-  delete{{entity.name}}(id: String): Boolean
+  {{api.name}}(_id: ID!): Boolean
 
 : endif 
 : endfor // apis for loop
-: endfor // entities for loop
 }
 :
 : endif
 
+: if module.has-query-apis
 type Query {
-: for entity in module.entities 
-: set apis = entity | apis
+: for api in module.query-apis 
 
-: for api in apis
 : if api.is-get-by-id
-  get{{entity.name}}ById(id: String) : {{entity.name}}
+  {{api.name}}(_id: ID!) : {{api.return-type}}
 
 : else if api.is-list
-  getAll{{entity.name | plural}} : [{{entity.name}}]
+  {{api.name}} : [{{api.return-type}}]
 
 : endif 
 : endfor // apis for loop
-: endfor // entities for loop
-
-: for entity in module.dtos 
-: set apis = entity | apis
-
-: for api in apis
-: if api.is-get-by-id
-  get{{entity.name}}ById(id: String) : {{entity.name}}
-
-: else if api.is-list
-  getAll{{entity.name | plural}} : [{{entity.name}}]
-
-: endif 
-: endfor // apis for loop
-: endfor // dtos for loop
 }
 :
-: for entity in module.entities 
+: endif
+:
+: for entity in module.entities-and-dtos 
 type {{entity.name}} {
 : for property in entity.properties  
     : if property.is-required 
@@ -87,6 +58,7 @@ type {{entity.name}} {
 : endfor 
 }
 :
+: if module.has-mutation-apis
 input {{entity.name}}Input {
 : for property in entity.properties  
 : set suffix
@@ -103,36 +75,8 @@ Input
 : endfor 
 }
 :
-: endfor
-:
-: for dto in module.dtos 
-type {{dto.name}} {
-: for property in dto.properties  
-    : if property.is-required 
- {{property.name}}: {{property | graphql-typename}}!
-    : else
- {{property.name}}: {{property | graphql-typename}}
-    : endif
-: endfor 
-}
-:
-input {{dto.name}}Input {
-: for property in dto.properties  
-: set suffix
-  : spaceless
-  : if property.is-object 
-Input
-  : endif
-  : if property.is-required 
-!
-  : endif
-  : endspaceless
-: endset
- {{property.name}}: {{property | graphql-typename}}{{suffix}}
-: endfor 
-}
-:
-: endfor // dtos for loop
+: endif
+: endfor //entity for loop
 :
 : for embedded-type in module.embedded-types 
 type {{embedded-type.name}} {
@@ -145,6 +89,7 @@ type {{embedded-type.name}} {
 : endfor 
 }
 :
+: if module.has-mutation-apis
 input {{embedded-type.name}}Input {
 : for property in embedded-type.properties  
 : set suffix
@@ -160,4 +105,6 @@ Input
  {{property.name}}: {{property | graphql-typename}}{{suffix}}
 : endfor 
 }
+:
+: endif
 : endfor // embedded type for loop

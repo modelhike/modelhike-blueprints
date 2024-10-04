@@ -33,6 +33,7 @@ public class {{entity.name}}Controller {
   @Autowired
   ObjectMapper mapper;
 :
+: if endity.has-push-apis
   private FluxSink<{{entity.name}}> {{entityname_lower}}Stream;
   private ConnectableFlux<{{entity.name}}> {{entityname_lower}}Publisher;
 :
@@ -45,19 +46,15 @@ public class {{entity.name}}Controller {
       {{entityname_lower}}Publisher.connect();
   }
 :
-  @SubscriptionMapping
-  public ConnectableFlux<{{entity.name}}> {{entity.name | plural}}Subscription() {
-      System.out.println("{{entity.name | plural}}Subscription");
-      return {{entityname_lower}}Publisher;
-  }
-:
+: endif
+
 : for api in apis
 
 : if api.is-create
-  @MutationMapping("add{{entity.name}}")
+  @MutationMapping("{{api.name}}")
   public Mono<{{entity.name}}> create{{entity.name}}(@Argument("input") {{entity.name}}Input payload) {
 //      await {{entity.name}}Validator.validateForCreate(payload);
-:
+
       var entity = mapper.convertValue(payload, {{entity.name}}.class);
       var cmd = ctx.getBean(Create{{entity.name}}Command.class);
       var returnValue  =  cmd.run(Mono.just(entity));
@@ -67,10 +64,10 @@ public class {{entity.name}}Controller {
 :
 
 : else if api.is-update
-  @MutationMapping("update{{entity.name}}")
+  @MutationMapping("{{api.name}}")
   public Mono<{{entity.name}}> update{{entity.name}}(@Argument("input") {{entity.name}}Input payload) {
 //      await {{entity.name}}Validator.validateForUpdate(payload);
-:
+
       var entity = mapper.convertValue(payload, {{entity.name}}.class);
       var cmd = ctx.getBean(Update{{entity.name}}Command.class);
       return cmd.run(Mono.just(entity));
@@ -78,45 +75,58 @@ public class {{entity.name}}Controller {
 :
 
 : else if api.is-delete
-  @MutationMapping("delete{{entity.name}}")
-  public Mono<Void> delete{{entity.name}}(@Argument("id") String id) {
+  @MutationMapping("{{api.name}}")
+  public Mono<Void> delete{{entity.name}}(@Argument("_id") String id) {
   //    if (!ObjectId.isValid(id)) {
   //      return ExternalResponse.badRequest('Invalid Request!!');
   //    }
-:
+
       var cmd = ctx.getBean(Delete{{entity.name}}Command.class);
       return cmd.run(id);
   }
 :
 
 : else if api.is-get-by-id
-  @QueryMapping("get{{entity.name}}ById")
-  public Mono<{{entity.name}}> get{{entity.name}}ById(@Argument("id") String id) {
+  @QueryMapping("{{api.name}}")
+  public Mono<{{entity.name}}> get{{entity.name}}ById(@Argument("_id") String id) {
 //      if (!ObjectId.isValid(id)) {
 //        return ExternalResponse.badRequest('Invalid Request!!');
 //      }
-:
+
       var cmd = ctx.getBean(Get{{entity.name}}ByIdQuery.class);      
       return cmd.run(id);
-
   }
 :
 
 : else if api.is-list
 
-  @QueryMapping("getAll{{entity.name | plural}}")
+  @QueryMapping("{{api.name}}")
   public Flux<{{entity.name}}> list{{entity.name | plural}}() {
 //      if (!ObjectId.isValid(id)) {
 //        return ExternalResponse.badRequest('Invalid Request!!');
 //      }
-:
+
       var cmd = ctx.getBean(List{{entity.name | plural}}Query.class);      
       return cmd.run();
 
   }
 :
+: else if api.is-push-data
 
+  @SubscriptionMapping
+  public ConnectableFlux<{{entity.name}}> {{entity.name | plural}}Subscription() {
+      System.out.println("{{api.name}}");
+      return {{entityname_lower}}Publisher;
+  }
+:
+: else if api.is-push-datalist
+
+  @SubscriptionMapping
+  public ConnectableFlux<{{entity.name}}> {{entity.name | plural}}Subscription() {
+      System.out.println("{{api.name}}");
+      return {{entityname_lower}}Publisher;
+  }
+:
 : endif 
 : endfor // apis for loop
-:
 }

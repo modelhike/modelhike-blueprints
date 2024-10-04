@@ -1,3 +1,8 @@
+-----
+/include-for : api in apis
+/include-if : api.is-get-by-id
+-----
+
 package {{entity_pkg_name}}.crud;
 :
 import static java.util.logging.Level.FINE;

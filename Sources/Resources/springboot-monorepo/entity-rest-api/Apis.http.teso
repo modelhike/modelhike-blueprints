@@ -25,7 +25,7 @@ Content-Type: application/json
 Authorization: Bearer TOKEN
 :
 {
-    "id": "{{randomID}}",{{api.entity | sample-json }}
+    "_id": "{{randomID}}",{{api.entity | sample-json }}
 }
 :
 : else if api.is-delete
