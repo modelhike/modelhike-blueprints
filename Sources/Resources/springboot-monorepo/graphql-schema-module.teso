@@ -25,6 +25,21 @@ type Mutation {
 : else if api.is-delete
   {{api.name}}(_id: ID!): Boolean
 
+: else if api.is-mutation-by-custom-logic
+
+: set argsWithType
+: spaceless
+: for param in api.custom-params
+    {{param.name}}🔥:🔥{{param.type | graphql-typename}}
+    : if not _lastInLoop
+    ,🔥
+    : endif
+: endfor 
+: endspaceless
+: endset
+
+  {{api.name}}({{argsWithType}}) : {{api.return-type | graphql-typename}}
+
 : endif 
 : endfor // apis for loop
 }
@@ -40,6 +55,49 @@ type Query {
 
 : else if api.is-list
   {{api.name}} : [{{api.return-type}}]
+
+: else if api.is-list-by-custom-props
+
+: set argsWithType
+: spaceless
+: for property in api.properties-involved
+    {{property.name}}🔥:🔥{{property | graphql-typename}}
+    : if not _lastInLoop
+    ,🔥
+    : endif
+: endfor 
+: endspaceless
+: endset
+
+  {{api.name}}({{argsWithType}}) : [{{api.return-type}}]
+
+: else if api.is-get-by-custom-logic
+
+: set argsWithType
+: spaceless
+: for param in api.custom-params
+    {{param.name}}🔥:🔥{{param.type | graphql-typename}}
+    : if not _lastInLoop
+    ,🔥
+    : endif
+: endfor 
+: endset
+
+  {{api.name}}({{argsWithType}}) : {{api.return-type}}
+
+: else if api.is-list-by-custom-logic
+
+: set argsWithType
+: spaceless
+: for param in api.custom-params
+    {{param.name}}🔥:🔥{{param.type | graphql-typename}}
+    : if not _lastInLoop
+    ,🔥
+    : endif
+: endfor 
+: endset
+
+  {{api.name}}({{argsWithType}}) : [{{api.return-type}}]
 
 : endif 
 : endfor // apis for loop

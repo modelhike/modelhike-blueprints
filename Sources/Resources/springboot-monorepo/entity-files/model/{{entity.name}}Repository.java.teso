@@ -2,7 +2,49 @@ package {{entity_pkg_name}}.model;
 :
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import java.util.Date;
+import java.util.ArrayList;
 :
 @Repository
 public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{entity.name}}, String> {
+
+: for api in apis
+: if api.is-list-by-custom-props
+
+: set propsConcat
+: spaceless
+: for property in api.properties-involved
+{{property.name | upperFirst}}
+: if not _lastInLoop
+    : if api.is-and-condition-for-properties-involved
+    And
+    : else
+    Or
+    : endif
+: endif
+: endfor
+: endspaceless
+: endset
+
+: set argsWithType
+: spaceless
+: for property in api.properties-involved
+: if property.is-array
+    ArrayList<{{property | typename}}>🔥{{property.name}}
+: else
+    {{property | typename}}🔥{{property.name}}
+: endif
+    : if not _lastInLoop
+    ,🔥
+    : endif
+: endfor 
+: endspaceless
+: endset
+
+    Flux<{{entity.name}}> findBy{{propsConcat}}({{argsWithType}});
+
+: endif
+: endfor
 }

@@ -1,0 +1,85 @@
+-----
+/include-for : api in apis
+/include-if : api.is-list-by-custom-props
+/file-name : {{api.name}}Query.java
+-----
+
+package {{entity_pkg_name}}.crud;
+:
+import static java.util.logging.Level.FINE;
+:
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import org.springframework.stereotype.Component;
+import java.util.Date;
+import java.util.ArrayList;
+import {{entity_pkg_name}}.model.*;
+
+: set propsConcat
+: spaceless
+: for property in api.properties-involved
+{{property.name | upperFirst}}
+: if not _lastInLoop
+    : if api.is-and-condition-for-properties-involved
+    And
+    : else
+    Or
+    : endif
+: endif
+: endfor
+: endspaceless
+: endset
+
+: set argsWithType
+: spaceless
+: for property in api.properties-involved
+: if property.is-array
+    ArrayList<{{property | typename}}>🔥{{property.name}}
+: else
+    {{property | typename}}🔥{{property.name}}
+: endif
+    : if not _lastInLoop
+    ,🔥
+    : endif
+: endfor 
+: endspaceless
+: endset
+
+: set argsWithoutType
+: spaceless
+: for property in api.properties-involved
+{{property.name}}
+    : if not _lastInLoop
+    ,🔥
+    : endif
+
+: endfor 
+: endspaceless
+: endset
+
+@Component
+public class {{api.name}}Query {
+
+  private static final Logger LOG = LoggerFactory.getLogger({{api.name}}Query.class);
+:
+  private final {{entity.name}}Repository repository;
+:
+  @Autowired
+  public {{api.name}}Query({{entity.name}}Repository repository) {
+    this.repository = repository;
+  }
+:
+    public Flux<{{entity.name}}> run({{argsWithType}}) {
+
+        Flux<{{entity.name}}> returnValue =  repository.findBy{{propsConcat}}({{argsWithoutType}});
+
+        Mono<Long> totalCount = returnValue.count();
+
+        totalCount.subscribe((count -> System.out.println("Number of OR flights: " + count)));
+
+        return returnValue;
+    }
+}

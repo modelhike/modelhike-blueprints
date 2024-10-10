@@ -1,8 +1,13 @@
+-----
+/include-if : entity.has-any-apis
+-----
 : set urlPath = entity.name | split-camel-to-kebabcase + plural
 package {{entity_pkg_name}};
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Date;
+import java.util.ArrayList;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

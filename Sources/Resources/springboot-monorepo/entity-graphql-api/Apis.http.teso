@@ -88,7 +88,7 @@ subscription {
   : call print-query-fields(props: entity.properties)
   }
 }
-
+:
 : else if api.is-push-datalist
 
 ### Subscriptions
@@ -99,6 +99,83 @@ subscription {
   : call print-query-fields(props: entity.properties)
   }
 }
+:
+: else if api.is-list-by-custom-props
+
+: set argsWithType
+: for property in api.properties-involved
+    {{property.name}} : {{property | sample-value}},
+: endfor 
+: endset
+
+### {{api.givenname}}
+GRAPHQL {{baseUrlString}}
+:
+query {
+  {{api.name}}(
+    {{argsWithType}}
+    ) {
+  : call print-query-fields(props: entity.properties)
+  }
+}
+:
+: else if api.is-get-by-custom-logic
+
+: set argsWithType
+: for param in api.custom-params
+    {{param.name}} : {{param.type | sample-value}},
+: endfor 
+: endset
+
+### {{api.givenname}}
+GRAPHQL {{baseUrlString}}
+:
+query {
+  {{api.name}}(
+    {{argsWithType}}
+    ) {
+  : call print-query-fields(props: entity.properties)
+  }
+}
+:
+: else if api.is-list-by-custom-logic
+
+: set argsWithType
+: for param in api.custom-params
+    {{param.name}} : {{param.type | sample-value}},
+: endfor 
+: endset
+
+### {{api.givenname}}
+GRAPHQL {{baseUrlString}}
+:
+query {
+  {{api.name}}(
+    {{argsWithType}}
+    ) {
+  : call print-query-fields(props: entity.properties)
+  }
+}
+:
+: else if api.is-mutation-by-custom-logic
+
+: set argsWithType
+: for param in api.custom-params
+    {{param.name}} : {{param.type | sample-value}},
+: endfor 
+: endset
+
+### {{api.givenname}}
+GRAPHQL {{baseUrlString}}
+:
+mutation {
+  {{api.name}}(
+    {{argsWithType}}
+    ) {
+    {{api.return-type | graphql-typename}}
+  } 
+}
+:
 : endif 
 : endfor // apis for loop
 :

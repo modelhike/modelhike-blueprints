@@ -1,0 +1,49 @@
+-----
+/include-for : api in apis
+/include-if : api.is-mutation-by-custom-logic or api.is-get-by-custom-logic
+/file-name : {{api.name}}.java
+-----
+
+package {{entity_pkg_name}}.crud;
+:
+import static java.util.logging.Level.FINE;
+:
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import org.springframework.stereotype.Component;
+import java.util.Date;
+import java.util.ArrayList;
+import {{entity_pkg_name}}.model.*;
+
+: set argsWithType
+: spaceless
+: for param in api.custom-params
+    {{param.type | typename}}🔥{{param.name}}
+    : if not _lastInLoop
+    ,🔥
+    : endif
+: endfor 
+: endspaceless
+: endset
+:
+@Component
+public class {{api.name}} {
+
+  private static final Logger LOG = LoggerFactory.getLogger({{api.name}}.class);
+:
+  private final {{entity.name}}Repository repository;
+:
+  @Autowired
+  public {{api.name}}({{entity.name}}Repository repository) {
+    this.repository = repository;
+  }
+:
+    public Mono<{{api.return-type | typename}}> run({{argsWithType}}) {
+        //TODO Implement this
+        
+        return null;
+    }
+}
