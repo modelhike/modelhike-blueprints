@@ -7,17 +7,15 @@ package {{entity_pkg_name}}.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import lombok.Data;
-
 : if module.has-embedded-types
 import {{module_pkg_name}}.types.*;
 : endif
+
 :
 @Data
 public class {{entity.name}}Input {
 : for property in entity.properties  
-: if property.is-date
-  public OffsetDateTime {{property.name}};
-: else if property.is-array
+: if property.is-array
   private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
 : else
   private {{property | typename}} {{property.name}};

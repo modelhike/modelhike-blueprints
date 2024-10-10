@@ -5,7 +5,6 @@ spring:
   data:
     mongodb:
       uri: {{db-uri}}
-      database: {{db-database-name}}
   webflux:
     cors:
       allowed-origins: "{{allowed-cors-url}}"
