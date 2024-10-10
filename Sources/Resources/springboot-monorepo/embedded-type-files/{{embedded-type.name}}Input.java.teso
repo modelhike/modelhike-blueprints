@@ -12,9 +12,7 @@ import lombok.Data;
 @Data
 public class {{embedded-type.name}}Input {
 : for property in embedded-type.properties  
-: if property.is-date
-  public OffsetDateTime {{property.name}};
-: else if property.is-array
+: if property.is-array
   private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
 : else
   private {{property | typename}} {{property.name}};

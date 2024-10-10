@@ -8,6 +8,7 @@ import lombok.Data;
 : if module.has-embedded-types
 import {{module_pkg_name}}.types.*;
 : endif
+
 :
 @Data
 @Document(collection = "{{dbCollection}}")
