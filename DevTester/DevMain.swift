@@ -17,9 +17,9 @@ struct Development {
         ws.basePath = SystemFolder.documents.path / "diagsoup"
         //ws.debugLog.flags.fileGeneration = true
         
-        //let blueprint = "nestjs-monorepo"
+        //let blueprint = "api-nestjs-monorepo"
         //try ws.loadSymbols([.typescript, .mongodb_typescript])
-        let blueprint = "springboot-monorepo"
+        let blueprint = "api-springboot-monorepo"
         try ws.loadSymbols([.java])
 
         let modelRepo = LocalFileModelLoader(path: ws.basePath, with: ws.context)
