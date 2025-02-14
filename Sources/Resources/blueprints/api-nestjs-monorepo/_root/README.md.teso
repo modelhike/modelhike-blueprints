@@ -1,9 +1,9 @@
-# Introduction 
+# Introduction
 This backend monorepo is part of {{Product-name}}
 :
 # Modules
 Following microservices are available:
-: for module in modules 
+: for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 - {{module.name}} -> {{module_folder_name}}
 : endfor
@@ -18,7 +18,7 @@ Following microservices are available:
 2. Ensure that the .ENV files are having correct values
 3. Run any microservice, as below:
 
-: for module in modules 
+: for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 
 :
@@ -29,7 +29,7 @@ yarn start {{module_folder_name}}
 
 : endfor
 
-: set default_module_folder_name = module-default.name| lowercase + kebabcase
+: set default_module_folder_name = @container.default-module.name| lowercase + kebabcase
 :
 4. Just running **start** without a microservice name, will start **{{default_module_folder_name}}** microservice
 ```

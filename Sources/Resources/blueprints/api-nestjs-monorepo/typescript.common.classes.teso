@@ -1,12 +1,12 @@
-: for common in commons 
+: for common in @container.commons
 // {{ common.name }}
-: for type in common.types 
+: for type in common.types
 export class {{type.name}} {
-: for property in type.properties  
+: for property in type.properties
  {{property.name}}!: {{property | typename}};
-: endfor 
+: endfor
 }
 :
-: endfor 
+: endfor
 
-: endfor 
+: endfor

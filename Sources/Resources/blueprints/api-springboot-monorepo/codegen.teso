@@ -4,8 +4,8 @@ api-base-path : /api/v1
 
 : announce "Generating SpringBoot Reactive Apis (monorepo) ..."
 
-: for module in modules 
-: set working_dir = "/" 
+: for module in @container.modules
+: set working_dir = "/"
 
 : set module_folder_name = module.name| lowercase + kebabcase
 : set module_pkg_name
@@ -22,9 +22,9 @@ api-base-path : /api/v1
 
 : set apis = entity | apis
 
-: set entity_dir 
+: set entity_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/{{submodule_pkg_name}}/
-: endset 
+: endset
 
 : render-folder "entity-files" to entity_dir
 //: render-folder "entity-rest-api" to entity_dir
@@ -33,38 +33,38 @@ api-base-path : /api/v1
 : endfor // entity for loop
 
 : ----------- embedded types -------------
-: for embedded-type in module.embedded-types 
+: for embedded-type in module.embedded-types
 : set embedded_type_pkg_name
 {{module_pkg_name}}.types
 : endset
 
-: set embedded_type_dir 
+: set embedded_type_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/types/
-: endset 
+: endset
 :
 : render-folder "embedded-type-files" to embedded_type_dir
 :
 : endfor // embedded type for loop
 
-: set  module_dir 
+: set  module_dir
 /base-services/{{module_folder_name}}/
-: endset 
+: endset
 
 : render-folder "base-service-files" to module_dir
 
-: set module_src_dir 
+: set module_src_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/
-: endset 
+: endset
 
 : render-folder "base-service-files-src" to module_src_dir
 
 : call render-graphQl-schema()
 
 // generate documentation
-: set working_dir = "/docs/class-diag" 
-: set file_name 
+: set working_dir = "/docs/class-diag"
+: set file_name
 {{module_folder_name}}.puml
-: endset 
+: endset
 
 : render-file "plantuml.classes" as file_name
 
@@ -78,9 +78,9 @@ api-base-path : /api/v1
     /base-services/{{module_folder_name}}/resources/graphql
     : endset
 
-    : set file_name 
+    : set file_name
     {{module_folder_name}}.graphqls
-    : endset 
+    : endset
 
     : render-file "graphql-schema-module" as file_name
-: endfunc 
+: endfunc

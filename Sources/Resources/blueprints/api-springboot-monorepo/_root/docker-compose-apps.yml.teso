@@ -1,7 +1,7 @@
 version: '2.1'
 :
 services:
-: for module in modules 
+: for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 
   {{module_folder_name}}:
@@ -26,4 +26,3 @@ services:
 :
 : endfor
 :
-

@@ -1,9 +1,9 @@
-# Introduction 
+# Introduction
 This backend monorepo is part of {{Product-name}}
 :
 # Modules
 Following microservices are available:
-: for module in modules 
+: for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 - {{module.name}} -> {{module_folder_name}}
 : endfor

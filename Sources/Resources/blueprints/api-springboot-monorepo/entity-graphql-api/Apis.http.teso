@@ -1,6 +1,6 @@
 : set urlPath = entity.name | split-camel-to-kebabcase + plural
-: set randomID = mock.object-id 
-: set baseUrlString 
+: set randomID = @mock.object-id
+: set baseUrlString
 {{ "{" }}{baseurl}}
 : endset // workaround: as escaping '{' is not supported #}
 @baseurl = http://localhost:{{module.port}}/graphql
@@ -34,7 +34,7 @@ mutation {{api.name}}($input: {{entity.name}}Input) {
   }
 :
 {
-   "input": { 
+   "input": {
     "_id": "{{randomID}}",{{api.entity | sample-json }} }
 }
 :
@@ -105,7 +105,7 @@ subscription {
 : set argsWithType
 : for property in api.properties-involved
     {{property.name}} : {{property | sample-value}},
-: endfor 
+: endfor
 : endset
 
 ### {{api.givenname}}
@@ -124,7 +124,7 @@ query {
 : set argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
-: endfor 
+: endfor
 : endset
 
 ### {{api.givenname}}
@@ -143,7 +143,7 @@ query {
 : set argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
-: endfor 
+: endfor
 : endset
 
 ### {{api.givenname}}
@@ -162,7 +162,7 @@ query {
 : set argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
-: endfor 
+: endfor
 : endset
 
 ### {{api.givenname}}
@@ -173,10 +173,10 @@ mutation {
     {{argsWithType}}
     ) {
     {{api.return-type | graphql-typename}}
-  } 
+  }
 }
 :
-: endif 
+: endif
 : endfor // apis for loop
 :
 
@@ -184,7 +184,7 @@ mutation {
 : --------------
 : func print-query-fields (props)
 : for property in props
-    : if property.is-object 
+    : if property.is-object
     : set obj = property.obj-type | get-object
     {{property.name}} {
     : call print-query-fields(props: obj.properties)
@@ -193,5 +193,5 @@ mutation {
     {{property.name}}
     : endif
 
-: endfor 
+: endfor
 : endfunc

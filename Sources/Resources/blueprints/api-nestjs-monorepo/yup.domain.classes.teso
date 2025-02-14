@@ -1,11 +1,11 @@
 import * as Yup from 'yup';
 :
 import {
-: for common in commons 
-: for type in common.types 
+: for common in @container.commons
+: for type in common.types
 {{type.name}}Schema,
-: endfor 
-: endfor 
+: endfor
+: endfor
 } from 'libs/validation/yup.common.classes.schema';
 import { UserRoles } from 'libs/includes/constants';
 
@@ -26,21 +26,21 @@ export const bufferValidator = (value: any) => {
 
 : func render-custom-type( name, property )
   //: spaceless
-  : if property.is-array 
-    : if property.is-required 
+  : if property.is-array
+    : if property.is-required
     {{property.name}}: Yup.array().of({{name}}Schema).min(minLenForArrays).required(),
-    : else  
+    : else
     {{property.name}}: Yup.array().of({{name}}Schema).min(minLenForArrays),
-    : endif 
-  : else 
-    : if property.is-required 
+    : endif
+  : else
+    : if property.is-required
     {{property.name}}: {{name}}Schema.required(),
-    : else  
+    : else
     {{property.name}}: {{name}}Schema,
-    : endif 
-  : endif 
+    : endif
+  : endif
  // : endspaceless
-: endfunc 
+: endfunc
 
 : func render-type-schema(type)
 
@@ -49,69 +49,69 @@ export const {{type.name}}Schema = Yup.object()
 : for prop in type.properties
   : set suffix
     : spaceless
-    : if prop.is-required 
+    : if prop.is-required
     .required()
-    : endif 
+    : endif
     ,
     : endspaceless
-  :  endset 
-: if prop.is-number  
+  :  endset
+: if prop.is-number
     {{prop.name}}: Yup.number(){{suffix}}
-: else if prop.is-bool 
+: else if prop.is-bool
     {{prop.name}}: Yup.boolean(){{suffix}}
-: else if prop.is-date 
+: else if prop.is-date
     {{prop.name}}: Yup.string().datetime(){{suffix}}
-: else if prop.is-buffer 
+: else if prop.is-buffer
     {{prop.name}}: Yup.mixed().test('is-buffer', '{{prop.name}} must be a Buffer', bufferValidator){{suffix}}
-: else if prop.is-any 
+: else if prop.is-any
     {{prop.name}}: Yup.mixed(){{suffix}}
-: else if prop.is-string 
-  : set suffix 
+: else if prop.is-string
+  : set suffix
   : if prop.has-attrib-oneOf
     .oneOf({{prop.attrib-oneOf}})
-  : endif 
-  : endset 
-  : if prop.is-array 
-    : set suffix 
+  : endif
+  : endset
+  : if prop.is-array
+    : set suffix
       : spaceless
       : if prop.is-required
       .required(){{suffix}},
       : else
       {{suffix}},
-      : endif 
+      : endif
       : endspaceless
-    :  endset 
+    :  endset
     {{prop.name}}: Yup.array().of(Yup.string().min(minLenForOptioninalStrings).nullable()).min(minLenForArrays){{suffix}}
-  : else 
-    : if prop.is-required 
+  : else
+    : if prop.is-required
     {{prop.name}}: Yup.string().required(){{suffix}},
-    : else  
+    : else
     {{prop.name}}: Yup.string().min(minLenForOptioninalStrings).nullable(){{suffix}},
-    : endif 
-  : endif 
-: else if prop.is-id 
+    : endif
+  : endif
+: else if prop.is-id
 // dont generate schema for _id property
-//  : if prop.is-array 
+//  : if prop.is-array
 //    {{prop.name}}: Yup.array().of(Yup.string().min(minLenForOptioninalStrings).nullable()).min(minLenForArrays){{suffix}}
-//  : else 
-//    : if prop.is-required 
+//  : else
+//    : if prop.is-required
 //    {{prop.name}}: Yup.string().required(),
-//    : else  
+//    : else
 //    {{prop.name}}: Yup.string().min(minLenForOptioninalStrings).nullable(),
-//    : endif 
-//  : endif 
-: else if prop.is-reference 
+//    : endif
+//  : endif
+: else if prop.is-reference
   : call render-custom-type( name : "Reference", property:  prop )
-: else if prop.is-extended-reference 
+: else if prop.is-extended-reference
   : call render-custom-type( name : "ExtendedReference", property: prop )
-: else if prop.is-coded-value 
+: else if prop.is-coded-value
   : call render-custom-type( name : "CodedValue", property: prop )
-: else if prop.is-custom-type 
+: else if prop.is-custom-type
   : call render-custom-type( name : prop.custom-type, property: prop )
-: else 
+: else
 --UnKnown--
-: endif 
-: endfor 
+: endif
+: endfor
 })
 .strict()
 .noUnknown();
@@ -119,21 +119,21 @@ export const {{type.name}}Schema = Yup.object()
 
 : endfunc
 
-: for module in modules 
+: for module in @container.modules
 // {{ module.name }}
 // embedded types need to be rendered before their usage to satisfy dependency
 
-//: for type in module.embeddedTypes 
+//: for type in module.embeddedTypes
 //: call render-type-schema(type: type)
-//: endfor 
+//: endfor
 
-//: for type in module.entities 
+//: for type in module.entities
 //: call render-type-schema(type: type)
-//: endfor 
+//: endfor
 
-: for type in module.types 
+: for type in module.types
 : call render-type-schema(type: type)
-: endfor 
+: endfor
 
 
-: endfor 
+: endfor

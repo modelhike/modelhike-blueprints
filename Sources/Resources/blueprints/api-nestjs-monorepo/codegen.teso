@@ -3,7 +3,7 @@ Product-name : GenProduct
 Company-name : WowCompany
 -----
 
-: console-log "Generating NestJs Apis (monorepo) ..."
+: announce "Generating NestJs Apis (monorepo) ..."
 
 : set working_dir = "/libs/domain-models"
 
@@ -16,90 +16,90 @@ Company-name : WowCompany
 : render-file "yup.common.classes" as "yup.common.classes.schema.ts"
 
 
-: for module in modules 
+: for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 
-: for entity in module.entities 
+: for entity in module.entities
 : set submodule_folder_name = entity.given-name| lowercase + kebabcase
-: set-obj-attrib entity.folder_name = submodule_folder_name
+: set entity.folder_name = submodule_folder_name
 
 : set apis = entity | apis
 
-: set working_dir 
+: set working_dir
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}/crud
-: endset 
+: endset
 
-: for api in apis 
+: for api in apis
 
-: if api.is-create 
+: if api.is-create
 
 	: set file_name
 	create.{{entity.name | lowercase}}.ts
-	: endset 
+	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name 
-	: set-obj-attrib api.cqrs-file-import-path 
+	: set-obj-attrib api.cqrs-filename = file_name
+	: set-obj-attrib api.cqrs-file-import-path
 	./crud/create.{{entity.name | lowercase}}
-	: endset 
+	: endset
 
 	: render-file "entity.create.command" as file_name
 
-: else if api.is-update 
+: else if api.is-update
 
-	: set file_name 
+	: set file_name
 	update.{{entity.name | lowercase}}.ts
-	: endset 
+	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name 
-	: set-obj-attrib api.cqrs-file-import-path 
+	: set-obj-attrib api.cqrs-filename = file_name
+	: set-obj-attrib api.cqrs-file-import-path
 	./crud/update.{{entity.name | lowercase}}
-	: endset 
+	: endset
 	: render-file "entity.update.command" as file_name
 
-: else if api.is-delete 
+: else if api.is-delete
 
-	: set file_name 
+	: set file_name
 	delete.{{entity.name | lowercase}}.ts
-	: endset 
+	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name 
-	: set-obj-attrib api.cqrs-file-import-path 
+	: set-obj-attrib api.cqrs-filename = file_name
+	: set-obj-attrib api.cqrs-file-import-path
 	./crud/delete.{{entity.name | lowercase}}
-	: endset 
+	: endset
 	: render-file "entity.delete.command" as file_name
 
-: else if api.is-get-by-id 
+: else if api.is-get-by-id
 
-	: set file_name 
+	: set file_name
 	get.{{entity.name | lowercase}}.byId.ts
-	: endset 
-	: set-obj-attrib api.cqrs-filename = file_name 
-	: set-obj-attrib api.cqrs-file-import-path 
+	: endset
+	: set-obj-attrib api.cqrs-filename = file_name
+	: set-obj-attrib api.cqrs-file-import-path
 	./crud/get.{{entity.name | lowercase}}.byId
-	: endset 
+	: endset
 	: render-file "entity.get.byid.query" as file_name
 
 : else if api.is-list
 
-	: set file_name 
+	: set file_name
 	list.{{entity.name | lowercase+plural}}.ts
-	: endset 
+	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name 
-	: set-obj-attrib api.cqrs-file-import-path 
+	: set-obj-attrib api.cqrs-filename = file_name
+	: set-obj-attrib api.cqrs-file-import-path
 	./crud/list.{{entity.name | lowercase+plural}}
-	: endset 
+	: endset
 
 	: render-file "entity.get.all.query" as file_name
 
-: endif 
+: endif
 
 
 : endfor // apis for loop
 
-: set working_dir 
+: set working_dir
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}
-: endset 
+: endset
 
 : render-file "entity.controller" as "controller.ts"
 : render-file "entity.controller.testing" as "controller.test.ts"
@@ -111,31 +111,31 @@ Company-name : WowCompany
 
 : endfor // entity for loop
 
-: set working_dir 
+: set working_dir
 /apps/{{module_folder_name}}/src/
-: endset 
+: endset
 
 : render-file "app.module" as "app.module.ts"
 : render-file "app.main" as "main.ts"
 
-: set working_dir 
+: set working_dir
 /apps/{{module_folder_name}}/
-: endset 
+: endset
 
 : render-file "app.tsconfig.json" as "tsconfig.app.json"
 : render-file "app.jest.config.js" as "jest.config.js"
 
 // generate documentation
-: set working_dir = "/docs/class-diag" 
-: set file_name 
+: set working_dir = "/docs/class-diag"
+: set file_name
 {{module_folder_name}}.puml
-: endset 
+: endset
 
 : render-file "plantuml.classes" as file_name
 
 : endfor // modules for loop
 
-: set working_dir = "/" 
+: set working_dir = "/"
 
 : copy-folder "libs"
 //: copy-folder "monorepo" to working_dir
