@@ -12,7 +12,7 @@
     "tsConfigPath": "apps/{{default_module_folder_name}}/tsconfig.app.json"
   },
   "projects": {
-: for module in modules 
+: for module in modules
 : set module_folder_name = module.name| lowercase + kebabcase
 
     "{{module_folder_name}}": {
@@ -23,7 +23,7 @@
       "compilerOptions": {
         "tsConfigPath": "apps/{{module_folder_name}}/tsconfig.app.json"
       }
-: if not _lastInLoop
+: if not @loop.last
     },
 : else
     }

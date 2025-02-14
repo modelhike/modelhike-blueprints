@@ -2,7 +2,7 @@ scalar DateTime
 :
 : if module.has-push-apis
 type Subscription {
-: for api in module.push-apis 
+: for api in module.push-apis
 : if api.is-push-datalist
   {{api.name}} : [{{api.return-type}}]
 : else
@@ -15,7 +15,7 @@ type Subscription {
 
 : if module.has-mutation-apis
 type Mutation {
-: for api in module.mutation-apis 
+: for api in module.mutation-apis
 : if api.is-create
   {{api.name}}(input: {{api.input-type}}Input!): {{api.return-type}}
 
@@ -31,16 +31,16 @@ type Mutation {
 : spaceless
 : for param in api.custom-params
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
-: endfor 
+: endfor
 : endspaceless
 : endset
 
   {{api.name}}({{argsWithType}}) : {{api.return-type | graphql-typename}}
 
-: endif 
+: endif
 : endfor // apis for loop
 }
 :
@@ -48,7 +48,7 @@ type Mutation {
 
 : if module.has-query-apis
 type Query {
-: for api in module.query-apis 
+: for api in module.query-apis
 
 : if api.is-get-by-id
   {{api.name}}(_id: ID!) : {{api.return-type}}
@@ -62,10 +62,10 @@ type Query {
 : spaceless
 : for property in api.properties-involved
     {{property.name}}🔥:🔥{{property | graphql-typename}}
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
-: endfor 
+: endfor
 : endspaceless
 : endset
 
@@ -77,10 +77,10 @@ type Query {
 : spaceless
 : for param in api.custom-params
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
-: endfor 
+: endfor
 : endset
 
   {{api.name}}({{argsWithType}}) : {{api.return-type}}
@@ -91,77 +91,77 @@ type Query {
 : spaceless
 : for param in api.custom-params
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
-: endfor 
+: endfor
 : endset
 
   {{api.name}}({{argsWithType}}) : [{{api.return-type}}]
 
-: endif 
+: endif
 : endfor // apis for loop
 }
 :
 : endif
 :
-: for entity in module.entities-and-dtos 
+: for entity in module.entities-and-dtos
 type {{entity.name}} {
-: for property in entity.properties  
-    : if property.is-required 
+: for property in entity.properties
+    : if property.is-required
  {{property.name}}: {{property | graphql-typename}}!
     : else
  {{property.name}}: {{property | graphql-typename}}
     : endif
-: endfor 
+: endfor
 }
 :
 : if module.has-mutation-apis
 input {{entity.name}}Input {
-: for property in entity.properties  
+: for property in entity.properties
 : set suffix
   : spaceless
-  : if property.is-object 
+  : if property.is-object
 Input
   : endif
-  : if property.is-required 
+  : if property.is-required
 !
   : endif
   : endspaceless
 : endset
  {{property.name}}: {{property | graphql-typename}}{{suffix}}
-: endfor 
+: endfor
 }
 :
 : endif
 : endfor //entity for loop
 :
-: for embedded-type in module.embedded-types 
+: for embedded-type in module.embedded-types
 type {{embedded-type.name}} {
-: for property in embedded-type.properties  
-    : if property.is-required 
+: for property in embedded-type.properties
+    : if property.is-required
  {{property.name}}: {{property | graphql-typename}}!
     : else
  {{property.name}}: {{property | graphql-typename}}
     : endif
-: endfor 
+: endfor
 }
 :
 : if module.has-mutation-apis
 input {{embedded-type.name}}Input {
-: for property in embedded-type.properties  
+: for property in embedded-type.properties
 : set suffix
   : spaceless
-  : if property.is-object 
+  : if property.is-object
 Input
   : endif
-  : if property.is-required 
+  : if property.is-required
 !
   : endif
   : endspaceless
 : endset
  {{property.name}}: {{property | graphql-typename}}{{suffix}}
-: endfor 
+: endfor
 }
 :
 : endif

@@ -17,7 +17,7 @@ public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{ent
 : spaceless
 : for property in api.properties-involved
 {{property.name | upperFirst}}
-: if not _lastInLoop
+: if not @loop.last
     : if api.is-and-condition-for-properties-involved
     And
     : else
@@ -36,10 +36,10 @@ public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{ent
 : else
     {{property | typename}}🔥{{property.name}}
 : endif
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
-: endfor 
+: endfor
 : endspaceless
 : endset
 

@@ -22,7 +22,7 @@ import {{entity_pkg_name}}.model.*;
 : spaceless
 : for property in api.properties-involved
 {{property.name | upperFirst}}
-: if not _lastInLoop
+: if not @loop.last
     : if api.is-and-condition-for-properties-involved
     And
     : else
@@ -41,10 +41,10 @@ import {{entity_pkg_name}}.model.*;
 : else
     {{property | typename}}🔥{{property.name}}
 : endif
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
-: endfor 
+: endfor
 : endspaceless
 : endset
 
@@ -52,11 +52,11 @@ import {{entity_pkg_name}}.model.*;
 : spaceless
 : for property in api.properties-involved
 {{property.name}}
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
 
-: endfor 
+: endfor
 : endspaceless
 : endset
 

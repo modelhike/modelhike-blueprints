@@ -22,10 +22,10 @@ import {{entity_pkg_name}}.model.*;
 : spaceless
 : for param in api.custom-params
     {{param.type | typename}}🔥{{param.name}}
-    : if not _lastInLoop
+    : if not @loop.last
     ,🔥
     : endif
-: endfor 
+: endfor
 : endspaceless
 : endset
 :
@@ -43,7 +43,7 @@ public class {{api.name}} {
 :
     public Flux<{{api.return-type | typename}}> run({{argsWithType}}) {
         //TODO Implement this
-        
+
         return null;
     }
 }
