@@ -1,6 +1,6 @@
 : set urlPath = entity.name | split-camel-to-kebabcase + plural
 : set randomID = @mock.object-id
-: set baseUrlString
+: set-str baseUrlString
 {{ "{" }}{baseurl}}
 : endset // workaround: as escaping '{' is not supported #}
 @baseurl = http://localhost:{{module.port}}/graphql
@@ -102,7 +102,7 @@ subscription {
 :
 : else if api.is-list-by-custom-props
 
-: set argsWithType
+: set-str argsWithType
 : for property in api.properties-involved
     {{property.name}} : {{property | sample-value}},
 : endfor
@@ -121,7 +121,7 @@ query {
 :
 : else if api.is-get-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
 : endfor
@@ -140,7 +140,7 @@ query {
 :
 : else if api.is-list-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
 : endfor
@@ -159,7 +159,7 @@ query {
 :
 : else if api.is-mutation-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
 : endfor

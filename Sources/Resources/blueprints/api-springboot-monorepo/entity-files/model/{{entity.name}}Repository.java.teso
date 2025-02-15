@@ -13,7 +13,7 @@ public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{ent
 : for api in apis
 : if api.is-list-by-custom-props
 
-: set propsConcat
+: set-str propsConcat
 : spaceless
 : for property in api.properties-involved
 {{property.name | upperFirst}}
@@ -28,7 +28,7 @@ public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{ent
 : endspaceless
 : endset
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for property in api.properties-involved
 : if property.is-array

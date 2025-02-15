@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import {{entity_pkg_name}}.model.*;
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for param in api.custom-params
     {{param.type | typename}}🔥{{param.name}}

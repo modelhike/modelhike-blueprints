@@ -23,7 +23,7 @@ import org.springframework.stereotype.Controller;
 import {{entity_pkg_name}}.model.*;
 import {{entity_pkg_name}}.crud.*;
 :
-: set entityname_lower
+: set-str entityname_lower
 {{entity.name | lowercase}}
 : endset
 
@@ -38,7 +38,7 @@ public class {{entity.name}}Controller {
   @Autowired
   ObjectMapper mapper;
 :
-: if endity.has-push-apis
+: if entity.has-push-apis
   private FluxSink<{{entity.name}}> {{entityname_lower}}Stream;
   private ConnectableFlux<{{entity.name}}> {{entityname_lower}}Publisher;
 :
@@ -118,7 +118,7 @@ public class {{entity.name}}Controller {
 :
 : else if api.is-list-by-custom-props
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for property in api.properties-involved
 : if property.is-array
@@ -133,7 +133,7 @@ public class {{entity.name}}Controller {
 : endspaceless
 : endset
 
-: set argsWithoutType
+: set-str argsWithoutType
 : spaceless
 : for property in api.properties-involved
 {{property.name}}
@@ -174,7 +174,7 @@ public class {{entity.name}}Controller {
 :
 : else if api.is-get-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for param in api.custom-params
     @Argument🔥{{param.type | typename}}🔥{{param.name}}
@@ -185,7 +185,7 @@ public class {{entity.name}}Controller {
 : endspaceless
 : endset
 
-: set argsWithoutType
+: set-str argsWithoutType
 : spaceless
 : for param in api.custom-params
 {{param.name}}
@@ -205,7 +205,7 @@ public class {{entity.name}}Controller {
 :
 : else if api.is-list-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for param in api.custom-params
     @Argument🔥{{param.type | typename}}🔥{{param.name}}
@@ -216,7 +216,7 @@ public class {{entity.name}}Controller {
 : endspaceless
 : endset
 
-: set argsWithoutType
+: set-str argsWithoutType
 : spaceless
 : for param in api.custom-params
 {{param.name}}
@@ -236,7 +236,7 @@ public class {{entity.name}}Controller {
 :
 : else if api.is-mutation-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for param in api.custom-params
     @Argument🔥{{param.type | typename}}🔥{{param.name}}
@@ -247,7 +247,7 @@ public class {{entity.name}}Controller {
 : endspaceless
 : endset
 
-: set argsWithoutType
+: set-str argsWithoutType
 : spaceless
 : for param in api.custom-params
 {{param.name}}

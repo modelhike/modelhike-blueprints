@@ -1,6 +1,6 @@
 : set entity_name = entity.name| lowercase + kebabcase
 : set randomID = @mock.object-id
-: set baseUrlString
+: set-str baseUrlString
 {{ "{" }}{baseurl}}
 : endset // workaround: as escaping '{' is not supported #}
 @baseurl = http://localhost:{{module.port}}/api/v1/{{entity_name}}

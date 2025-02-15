@@ -1,10 +1,10 @@
-: set dbCollection = entity.name | split-camel-to-kebabcase 
-: set-obj-attrib api.cqrs-name 
+: set dbCollection = entity.name | split-camel-to-kebabcase
+: set-str api.cqrs-name
 Get{{entity.name}}Query
-: endset 
-: set-obj-attrib api.cqrs-handler-name 
+: endset
+: set-str api.cqrs-handler-name
 Get{{entity.name}}QueryHandler
-: endset 
+: endset
 
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DBClient } from 'libs/db/db.client';

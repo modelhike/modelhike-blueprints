@@ -27,7 +27,7 @@ type Mutation {
 
 : else if api.is-mutation-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for param in api.custom-params
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
@@ -58,7 +58,7 @@ type Query {
 
 : else if api.is-list-by-custom-props
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for property in api.properties-involved
     {{property.name}}🔥:🔥{{property | graphql-typename}}
@@ -73,7 +73,7 @@ type Query {
 
 : else if api.is-get-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for param in api.custom-params
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
@@ -87,7 +87,7 @@ type Query {
 
 : else if api.is-list-by-custom-logic
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for param in api.custom-params
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
@@ -119,7 +119,7 @@ type {{entity.name}} {
 : if module.has-mutation-apis
 input {{entity.name}}Input {
 : for property in entity.properties
-: set suffix
+: set-str suffix
   : spaceless
   : if property.is-object
 Input
@@ -150,7 +150,7 @@ type {{embedded-type.name}} {
 : if module.has-mutation-apis
 input {{embedded-type.name}}Input {
 : for property in embedded-type.properties
-: set suffix
+: set-str suffix
   : spaceless
   : if property.is-object
 Input

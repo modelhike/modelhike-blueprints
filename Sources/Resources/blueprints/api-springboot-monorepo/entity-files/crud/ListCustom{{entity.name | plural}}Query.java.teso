@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import {{entity_pkg_name}}.model.*;
 
-: set propsConcat
+: set-str propsConcat
 : spaceless
 : for property in api.properties-involved
 {{property.name | upperFirst}}
@@ -33,7 +33,7 @@ import {{entity_pkg_name}}.model.*;
 : endspaceless
 : endset
 
-: set argsWithType
+: set-str argsWithType
 : spaceless
 : for property in api.properties-involved
 : if property.is-array
@@ -48,7 +48,7 @@ import {{entity_pkg_name}}.model.*;
 : endspaceless
 : endset
 
-: set argsWithoutType
+: set-str argsWithoutType
 : spaceless
 : for property in api.properties-involved
 {{property.name}}

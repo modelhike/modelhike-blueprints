@@ -25,7 +25,7 @@ Company-name : WowCompany
 
 : set apis = entity | apis
 
-: set working_dir
+: set-str working_dir
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}/crud
 : endset
 
@@ -33,12 +33,12 @@ Company-name : WowCompany
 
 : if api.is-create
 
-	: set file_name
+	: set-str file_name
 	create.{{entity.name | lowercase}}.ts
 	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name
-	: set-obj-attrib api.cqrs-file-import-path
+	: set api.cqrs-filename = file_name
+	: set-str api.cqrs-file-import-path
 	./crud/create.{{entity.name | lowercase}}
 	: endset
 
@@ -46,58 +46,60 @@ Company-name : WowCompany
 
 : else if api.is-update
 
-	: set file_name
+	: set-str file_name
 	update.{{entity.name | lowercase}}.ts
 	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name
-	: set-obj-attrib api.cqrs-file-import-path
+	: set api.cqrs-filename = file_name
+	: set-str api.cqrs-file-import-path
 	./crud/update.{{entity.name | lowercase}}
 	: endset
 	: render-file "entity.update.command" as file_name
 
 : else if api.is-delete
 
-	: set file_name
+	: set-str file_name
 	delete.{{entity.name | lowercase}}.ts
 	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name
-	: set-obj-attrib api.cqrs-file-import-path
+	: set api.cqrs-filename = file_name
+	: set-str api.cqrs-file-import-path
 	./crud/delete.{{entity.name | lowercase}}
 	: endset
 	: render-file "entity.delete.command" as file_name
 
 : else if api.is-get-by-id
 
-	: set file_name
+	: set-str file_name
 	get.{{entity.name | lowercase}}.byId.ts
 	: endset
-	: set-obj-attrib api.cqrs-filename = file_name
-	: set-obj-attrib api.cqrs-file-import-path
+	: set api.cqrs-filename = file_name
+	: set-str api.cqrs-file-import-path
 	./crud/get.{{entity.name | lowercase}}.byId
 	: endset
 	: render-file "entity.get.byid.query" as file_name
 
 : else if api.is-list
 
-	: set file_name
+	: set-str file_name
 	list.{{entity.name | lowercase+plural}}.ts
 	: endset
 
-	: set-obj-attrib api.cqrs-filename = file_name
-	: set-obj-attrib api.cqrs-file-import-path
+	: set api.cqrs-filename = file_name
+	: set-str api.cqrs-file-import-path
 	./crud/list.{{entity.name | lowercase+plural}}
 	: endset
 
 	: render-file "entity.get.all.query" as file_name
 
+: else
+: throw-error "unknown api type " + api.name
 : endif
 
 
 : endfor // apis for loop
 
-: set working_dir
+: set-str working_dir
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}
 : endset
 
@@ -111,14 +113,14 @@ Company-name : WowCompany
 
 : endfor // entity for loop
 
-: set working_dir
+: set-str working_dir
 /apps/{{module_folder_name}}/src/
 : endset
 
 : render-file "app.module" as "app.module.ts"
 : render-file "app.main" as "main.ts"
 
-: set working_dir
+: set-str working_dir
 /apps/{{module_folder_name}}/
 : endset
 
@@ -127,7 +129,7 @@ Company-name : WowCompany
 
 // generate documentation
 : set working_dir = "/docs/class-diag"
-: set file_name
+: set-str file_name
 {{module_folder_name}}.puml
 : endset
 

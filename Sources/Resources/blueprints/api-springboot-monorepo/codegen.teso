@@ -8,21 +8,21 @@ api-base-path : /api/v1
 : set working_dir = "/"
 
 : set module_folder_name = module.name| lowercase + kebabcase
-: set module_pkg_name
+: set-str module_pkg_name
 {{company-pkg-prefix}}.{{module.name| package-case + lowercase}}
 : endset
 : set module_folder_structure = module_pkg_name | replace(".", "/") //for creating java package structure
 
 : for entity in module.entities-and-dtos
 : set submodule_pkg_name = entity.name| package-case + lowercase
-//: set-obj-attrib entity.folder_name = submodule_folder_name
-: set entity_pkg_name
+//: set entity.folder_name = submodule_folder_name
+: set-str entity_pkg_name
 {{module_pkg_name}}.{{submodule_pkg_name}}
 : endset
 
 : set apis = entity | apis
 
-: set entity_dir
+: set-str entity_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/{{submodule_pkg_name}}/
 : endset
 
@@ -34,11 +34,11 @@ api-base-path : /api/v1
 
 : ----------- embedded types -------------
 : for embedded-type in module.embedded-types
-: set embedded_type_pkg_name
+: set-str embedded_type_pkg_name
 {{module_pkg_name}}.types
 : endset
 
-: set embedded_type_dir
+: set-str embedded_type_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/types/
 : endset
 :
@@ -46,13 +46,13 @@ api-base-path : /api/v1
 :
 : endfor // embedded type for loop
 
-: set  module_dir
+: set-str  module_dir
 /base-services/{{module_folder_name}}/
 : endset
 
 : render-folder "base-service-files" to module_dir
 
-: set module_src_dir
+: set-str module_src_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/
 : endset
 
@@ -62,7 +62,7 @@ api-base-path : /api/v1
 
 // generate documentation
 : set working_dir = "/docs/class-diag"
-: set file_name
+: set-str file_name
 {{module_folder_name}}.puml
 : endset
 
@@ -74,11 +74,11 @@ api-base-path : /api/v1
 
 : func render-graphQl-schema()
     // generate graphQL schema
-    : set working_dir
+    : set-str working_dir
     /base-services/{{module_folder_name}}/resources/graphql
     : endset
 
-    : set file_name
+    : set-str file_name
     {{module_folder_name}}.graphqls
     : endset
 

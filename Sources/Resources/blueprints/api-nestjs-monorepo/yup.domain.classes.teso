@@ -47,7 +47,7 @@ export const bufferValidator = (value: any) => {
 export const {{type.name}}Schema = Yup.object()
 .shape({
 : for prop in type.properties
-  : set suffix
+  : set-str suffix
     : spaceless
     : if prop.is-required
     .required()
@@ -66,13 +66,13 @@ export const {{type.name}}Schema = Yup.object()
 : else if prop.is-any
     {{prop.name}}: Yup.mixed(){{suffix}}
 : else if prop.is-string
-  : set suffix
+  : set-str suffix
   : if prop.has-attrib-oneOf
     .oneOf({{prop.attrib-oneOf}})
   : endif
   : endset
   : if prop.is-array
-    : set suffix
+    : set-str suffix
       : spaceless
       : if prop.is-required
       .required(){{suffix}},

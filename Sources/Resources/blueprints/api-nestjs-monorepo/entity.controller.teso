@@ -1,4 +1,4 @@
-: set entity_name = entity.name | lowercase 
+: set entity_name = entity.name | lowercase
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { InternalResponse } from 'libs/includes/internal.response';
 import { ExternalResponse } from 'libs/includes/external.response';
@@ -9,9 +9,9 @@ import { {{entity.name}} } from 'libs/domain-models/domain.entities';
 import { {{entity.name}}Validator } from './validator';
 //import { AuthGuard } from '@nestjs/passport';
 //import { RolesGuard } from '../ACL/roles.guard';
-: for api in apis 
-import { {{api.cqrs-name}} } from '{{api.cqrs-file-import-path}}';
-: endfor 
+: for api in apis
+import { {{api.cqrs-filename}} } from '{{api.cqrs-file-import-path}}';
+: endfor
 
 :
 //@UseGuards(RolesGuard)
@@ -81,15 +81,15 @@ export class {{entity.name}}Controller {
 : func getQueryParamString( propMapping, entity )
   : spaceless
   : set property = propMapping | get-last-recursive-prop(entity.name)
-  : if property 
+  : if property
     : if property.is-date
       string
     : else
       {{ property | typename }}
-    : endif 
+    : endif
   : else
     any
-  : endif 
+  : endif
   : endspaceless
 : endfunc
 
@@ -98,49 +98,49 @@ export class {{entity.name}}Controller {
     target{{param.param-name}}
   : else
     {{param.param-name}}
-    : if param.has-second-param-name 
+    : if param.has-second-param-name
     ,
     {{param.second-param-name}}
     : endif
-  : endif 
+  : endif
 : endfunc
 
 : func getQuerySplitStatementsIfAny( param )
-  : if param.has-multiple-params 
+  : if param.has-multiple-params
     const {{param.param-name}}List = {{param.param-name}}?.length ? {{param.param-name}}.split(',') : null;
     const target{{param.param-name}} = new Set({{param.param-name}}List);
-  : endif 
+  : endif
 : endfunc
 
-: if api.has-path 
+: if api.has-path
   @Get('\(api.path)')
-: else 
+: else
   @Get()
-: endif 
+: endif
   async Find{{entity.name | plural}}(
     @Query('page', ParseIntPipe) page: number = 1,
     @Query('limit', ParseIntPipe) limit: number = 10,
-: for param in api.query-params 
+: for param in api.query-params
     @Query('{{param.param-name}}') {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity : entity ) }}=,
-  : if param.has-second-param-name 
+  : if param.has-second-param-name
     @Query('{{param.second-param-name}}') {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first,  entity : entity ) }}= ,
-  : endif 
-: endfor 
+  : endif
+: endfor
   ): Promise<any> {
 
-: for param in api.query-params 
+: for param in api.query-params
     : call getQuerySplitStatementsIfAny( param : param )
-: endfor 
+: endfor
 
-: set paramsInputNames
+: set-str paramsInputNames
   : spaceless
   : for param in api.query-params
       : call getQueryParamNameAsQueryInput( param : param)
-      , 
+      ,
   : endfor
   : endspaceless
 
-: endset 
+: endset
 :
     const response: InternalResponse = await this.queryBus.execute(
         new Find{{entity.name}}ByQuery(page, limit, {{paramsInputNames}})
@@ -150,7 +150,7 @@ export class {{entity.name}}Controller {
   }
 :
 
-: endif 
+: endif
 : endfor // apis for loop
 :
 }

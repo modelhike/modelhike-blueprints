@@ -1,6 +1,6 @@
 : set urlPath = entity.name | split-camel-to-kebabcase + plural
 : set randomID = @mock.object-id
-: set baseUrlString
+: set-str baseUrlString
 {{ "{" }}{baseurl}}
 : endset // workaround: as escaping '{' is not supported #}
 @baseurl = http://localhost:{{module.port}}/api/v1/{{urlPath}}
