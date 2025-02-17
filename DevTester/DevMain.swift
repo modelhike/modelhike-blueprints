@@ -3,36 +3,21 @@ import DiagSoup
 
 @main
 struct Development {
-    static func main() {
+    static func main() async {
         do {
-            try runCodebaseGeneration()
+            try await runCodebaseGeneration()
         } catch {
             print(error)
         }
     }
     
-    static func runCodebaseGeneration() throws {
-        let ws = Workspace();
-                
-        ws.basePath = SystemFolder.documents.path / "diagsoup"
-        //ws.debugLog.flags.fileGeneration = true
-        
-        //let blueprint = "api-nestjs-monorepo"
-        //try ws.loadSymbols([.typescript, .mongodb_typescript])
-        let blueprint = "api-springboot-monorepo"
-        try ws.loadSymbols([.java])
-
-        let modelRepo = LocalFileModelLoader(path: ws.basePath, with: ws.context)
-        //let modelRepo = inlineModel(ws)
-        
-        try ws.loadModels(from: modelRepo)
-        
-       // let templatesPath = ws.basePath / "_gen.templates"
-        //let templatesRepo = LocalFileBlueprintLoader(blueprint: blueprint, path: templatesPath, with: ws.context)
-        let templatesRepo = OfficialBlueprintLoader(blueprint: blueprint, with: ws.context)
-
-        ws.generateCodebase(container: "APIs", usingBlueprintsFrom: templatesRepo)
+    static func runCodebaseGeneration() async throws {
+        let pipeline = Pipeline()
+//        let config = PipelineConfig()
+//        try await pipeline.run(using: config)
+        try await pipeline.run(using: Environment.debug)
     }
+    
     private static func inlineModel(_ ws: Workspace) -> InlineModelLoader {
         return InlineModelLoader(with: ws.context) {
             InlineModel {
