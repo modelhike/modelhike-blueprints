@@ -93,7 +93,7 @@ Company-name : WowCompany
 	: render-file "entity.get.all.query" as file_name
 
 : else
-: throw-error unknown api type '{{api.type}}' with name '{{api.name}}'
+: fatal-error unknown api '{{api.name}}', with type '{{api.type}}'
 : endif
 
 
