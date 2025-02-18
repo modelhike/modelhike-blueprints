@@ -12,10 +12,11 @@ struct Development {
     }
     
     static func runCodebaseGeneration() async throws {
-        let pipeline = Pipeline()
-//        let config = PipelineConfig()
-//        try await pipeline.run(using: config)
-        try await pipeline.run(using: Environment.debug)
+        let env = Environment.debug
+        
+        let pipeline = Pipelines.codegen
+        env.blueprints.add(OfficialBlueprintFinder())
+        try await pipeline.run(using: env)
     }
     
     private static func inlineModel(_ ws: Workspace) -> InlineModelLoader {
