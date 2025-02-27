@@ -1,4 +1,4 @@
-: set default_module_folder_name = module-default.name| lowercase + kebabcase
+: set default_module_folder_name = @container.default-module.name| lowercase + kebabcase
 
 {
   "collection": "@nestjs/schematics",
@@ -12,7 +12,7 @@
     "tsConfigPath": "apps/{{default_module_folder_name}}/tsconfig.app.json"
   },
   "projects": {
-: for module in modules
+: for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 
     "{{module_folder_name}}": {

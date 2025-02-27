@@ -6,12 +6,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-: for module in modules 
+: for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
     "start:{{module_folder_name}}": "nest start {{module_folder_name}} --env '${process.env.NODE_ENV}'",
     "start:{{module_folder_name}}:prod": "node dist/apps/{{module_folder_name}}/main",
 : endfor
-: set default_module_folder_name = module-default.name| lowercase + kebabcase
+: set default_module_folder_name = @container.default-module.name| lowercase + kebabcase
 
     "start": "nest start",
     "start:dev": "nest start --watch",
