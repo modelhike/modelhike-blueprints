@@ -12,7 +12,8 @@ struct Development {
     }
     
     static func runCodebaseGeneration() async throws {
-        let env = Environment.debug
+        var env = Environment.debug
+        env.containersToOutput = ["APIs"]
         
         let pipeline = Pipelines.codegen
         env.blueprints.add(OfficialBlueprintFinder())
