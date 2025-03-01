@@ -1,7 +1,7 @@
 import DiagSoup
 
 enum Environment {
-    static var debug: PipelineConfig {
+    static var debug: OutputConfig {
         var env = PipelineConfig()
         
         env.basePath = LocalPath(relativePath: "diagsoup", basePath: SystemFolder.documents.path)
@@ -9,7 +9,7 @@ enum Environment {
         return env
     }
     
-    static var production: PipelineConfig {
+    static var production: OutputConfig {
         var env = PipelineConfig()
 
         env.basePath = LocalPath(relativePath: "diagsoup", basePath: SystemFolder.documents.path)
