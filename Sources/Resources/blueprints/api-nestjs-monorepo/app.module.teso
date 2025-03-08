@@ -2,18 +2,18 @@ import { Module, Global, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 //import { AuthModule } from 'libs/auth/auth.module';
 import { CacheModule } from '@nestjs/cache-manager';
-: for entity in module.entities 
+: for entity in module.entities
 import { {{entity.name}}Module } from './{{entity.folder_name}}/module';
-: endfor 
+: end-for
 :
 const ENV = process.env.NODE_ENV;
 :
 @Global()
 @Module({
   imports: [ConfigModule.forRoot({ envFilePath: !ENV ? '.env' : `.env.${ENV}` }),
-  : for entity in module.entities 
+  : for entity in module.entities
   {{entity.name}}Module,
-  : endfor 
+  : end-for
 //  AuthModule,
   CacheModule.register({ isGlobal: true })
 ],

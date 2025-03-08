@@ -7,11 +7,11 @@ type Subscription {
   {{api.name}} : [{{api.return-type}}]
 : else
   {{api.name}} : {{api.return-type}}
-: endif
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop
 }
 :
-: endif
+: end-if
 
 : if module.has-mutation-apis
 type Mutation {
@@ -19,13 +19,13 @@ type Mutation {
 : if api.is-create
   {{api.name}}(input: {{api.input-type}}Input!): {{api.return-type}}
 
-: else if api.is-update
+: else-if api.is-update
   {{api.name}}(input: {{api.input-type}}Input!): {{api.return-type}}
 
-: else if api.is-delete
+: else-if api.is-delete
   {{api.name}}(_id: ID!): Boolean
 
-: else if api.is-mutation-by-custom-logic
+: else-if api.is-mutation-by-custom-logic
 
 : set-str argsWithType
 : spaceless
@@ -33,18 +33,18 @@ type Mutation {
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
   {{api.name}}({{argsWithType}}) : {{api.return-type | graphql-typename}}
 
-: endif
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop
 }
 :
-: endif
+: end-if
 
 : if module.has-query-apis
 type Query {
@@ -53,10 +53,10 @@ type Query {
 : if api.is-get-by-id
   {{api.name}}(_id: ID!) : {{api.return-type}}
 
-: else if api.is-list
+: else-if api.is-list
   {{api.name}} : [{{api.return-type}}]
 
-: else if api.is-list-by-custom-props
+: else-if api.is-list-by-custom-props
 
 : set-str argsWithType
 : spaceless
@@ -64,14 +64,14 @@ type Query {
     {{property.name}}🔥:🔥{{property | graphql-typename}}
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
   {{api.name}}({{argsWithType}}) : [{{api.return-type}}]
 
-: else if api.is-get-by-custom-logic
+: else-if api.is-get-by-custom-logic
 
 : set-str argsWithType
 : spaceless
@@ -79,13 +79,13 @@ type Query {
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endset
+    : end-if
+: end-for
+: end-set
 
   {{api.name}}({{argsWithType}}) : {{api.return-type}}
 
-: else if api.is-list-by-custom-logic
+: else-if api.is-list-by-custom-logic
 
 : set-str argsWithType
 : spaceless
@@ -93,17 +93,17 @@ type Query {
     {{param.name}}🔥:🔥{{param.type | graphql-typename}}
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endset
+    : end-if
+: end-for
+: end-set
 
   {{api.name}}({{argsWithType}}) : [{{api.return-type}}]
 
-: endif
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop
 }
 :
-: endif
+: end-if
 :
 : for entity in module.entities-and-dtos
 type {{entity.name}} {
@@ -112,8 +112,8 @@ type {{entity.name}} {
  {{property.name}}: {{property | graphql-typename}}!
     : else
  {{property.name}}: {{property | graphql-typename}}
-    : endif
-: endfor
+    : end-if
+: end-for
 }
 :
 : if module.has-mutation-apis
@@ -123,18 +123,18 @@ input {{entity.name}}Input {
   : spaceless
   : if property.is-object
 Input
-  : endif
+  : end-if
   : if property.is-required
 !
-  : endif
-  : endspaceless
-: endset
+  : end-if
+  : end-spaceless
+: end-set
  {{property.name}}: {{property | graphql-typename}}{{suffix}}
-: endfor
+: end-for
 }
 :
-: endif
-: endfor //entity for loop
+: end-if
+: end-for //entity for loop
 :
 : for embedded-type in module.embedded-types
 type {{embedded-type.name}} {
@@ -143,8 +143,8 @@ type {{embedded-type.name}} {
  {{property.name}}: {{property | graphql-typename}}!
     : else
  {{property.name}}: {{property | graphql-typename}}
-    : endif
-: endfor
+    : end-if
+: end-for
 }
 :
 : if module.has-mutation-apis
@@ -154,15 +154,15 @@ input {{embedded-type.name}}Input {
   : spaceless
   : if property.is-object
 Input
-  : endif
+  : end-if
   : if property.is-required
 !
-  : endif
-  : endspaceless
-: endset
+  : end-if
+  : end-spaceless
+: end-set
  {{property.name}}: {{property | graphql-typename}}{{suffix}}
-: endfor
+: end-for
 }
 :
-: endif
-: endfor // embedded type for loop
+: end-if
+: end-for // embedded type for loop

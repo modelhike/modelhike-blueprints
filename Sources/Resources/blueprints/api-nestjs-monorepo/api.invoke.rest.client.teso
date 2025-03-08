@@ -2,7 +2,7 @@
 : set randomID = @mock.object-id
 : set-str baseUrlString
 {{ "{" }}{baseurl}}
-: endset // workaround: as escaping '{' is not supported #}
+: end-set // workaround: as escaping '{' is not supported #}
 @baseurl = http://localhost:{{module.port}}/api/v1/{{entity_name}}
 :
 : for api in apis
@@ -17,7 +17,7 @@ Authorization: Bearer TOKEN
 { {{ api.entity | sample-json }}
 }
 :
-: else if api.is-update
+: else-if api.is-update
 
 ### Update by id
 PUT {{baseUrlString}}
@@ -28,19 +28,19 @@ Authorization: Bearer TOKEN
     "_id": "{{randomID}}",{{api.entity | sample-json }}
 }
 :
-: else if api.is-delete
+: else-if api.is-delete
 
 ### Delete by id
 DELETE {{baseUrlString}}/{{randomID}}
 Authorization: Bearer TOKEN
 :
-: else if api.is-get-by-id
+: else-if api.is-get-by-id
 
 ### Get by id
 GET {{baseUrlString}}/{{randomID}}
 Authorization: Bearer TOKEN
 :
-: else if api.is-list
+: else-if api.is-list
 
   : set sample-query = api | sample-query
   : if sample-query
@@ -57,7 +57,7 @@ Authorization: Bearer TOKEN
 GET {{baseUrlString}}?page=1&limit=10
 Authorization: Bearer TOKEN
 :
-  : endif
+  : end-if
 
-: endif
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop

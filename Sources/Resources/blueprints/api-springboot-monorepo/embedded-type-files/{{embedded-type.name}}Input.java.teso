@@ -11,11 +11,11 @@ import lombok.Data;
 :
 @Data
 public class {{embedded-type.name}}Input {
-: for property in embedded-type.properties  
+: for property in embedded-type.properties
 : if property.is-array
   private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
 : else
   private {{property | typename}} {{property.name}};
-: endif
-: endfor 
+: end-if
+: end-for
 }

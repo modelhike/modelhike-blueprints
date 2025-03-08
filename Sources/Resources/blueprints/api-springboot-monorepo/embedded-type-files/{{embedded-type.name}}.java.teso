@@ -7,15 +7,15 @@ import lombok.Data;
 :
 @Data
 public class {{embedded-type.name}} {
-: for property in embedded-type.properties  
+: for property in embedded-type.properties
 : if property.is-array
   private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
 : else
   private {{property | typename}} {{property.name}};
-: endif
-: endfor 
+: end-if
+: end-for
 :
-// : for property in embedded-type.properties  
+// : for property in embedded-type.properties
 //   public {{property | typename}} {{property.name}}() {
 //     return _{{property.name}};
 //   }
@@ -24,5 +24,5 @@ public class {{embedded-type.name}} {
 // 	this._{{property.name}} = _{{property.name}};
 //   }
 // :
-// : endfor
+// : end-for
 }

@@ -1,10 +1,10 @@
 : set dbCollection = entity.name | split-camel-to-kebabcase
 : set-str api.cqrs-name
 Delete{{entity.name}}Command
-: endset
+: end-set
 : set-str api.cqrs-handler-name
 Delete{{entity.name}}CommandHandler
-: endset
+: end-set
 
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InternalResponse } from 'libs/includes/internal.response';

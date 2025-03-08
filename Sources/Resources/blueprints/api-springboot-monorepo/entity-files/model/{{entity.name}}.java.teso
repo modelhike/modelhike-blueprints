@@ -7,21 +7,21 @@ import java.util.ArrayList;
 import lombok.Data;
 : if module.has-embedded-types
 import {{module_pkg_name}}.types.*;
-: endif
+: end-if
 
 :
 @Data
 @Document(collection = "{{dbCollection}}")
 public class {{entity.name}} {
-: for property in entity.properties  
+: for property in entity.properties
 : if property.is-array
   private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
 : else
   private {{property | typename}} {{property.name}};
-: endif
-: endfor 
+: end-if
+: end-for
 :
-// : for property in entity.properties  
+// : for property in entity.properties
 //   public {{property | typename}} {{property.name}}() {
 //     return _{{property.name}};
 //   }
@@ -30,5 +30,5 @@ public class {{entity.name}} {
 //     this._{{property.name}} = _{{property.name}};
 //   }
 // :
-// : endfor
+// : end-for
 }

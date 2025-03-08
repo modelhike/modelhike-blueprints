@@ -1,4 +1,4 @@
-: set entity_name = entity.name | lowercase 
+: set entity_name = entity.name | lowercase
 
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -101,12 +101,12 @@ describe('{{entity.name}}Controller (integration)', () => {
       });
   });
 
-: else if api.is-update
+: else-if api.is-update
 :
   it('/PUT {{entity_name}} existing', async () => {
     const payload = {
     "_id": existingId, {{api.entity | sample-json }}
-    } 
+    }
     const busResponse = InternalResponse.success()
     const response = { ...CommandOkResponse }
 :
@@ -138,7 +138,7 @@ describe('{{entity.name}}Controller (integration)', () => {
       .expect(response);
   });
 
-: else if api.is-delete
+: else-if api.is-delete
 :
   it('/DELETE {{entity_name}}/:id existing', async () => {
     const id = existingId; // Mock valid object id
@@ -168,7 +168,7 @@ describe('{{entity.name}}Controller (integration)', () => {
       .expect(response);
   });
 
-: else if api.is-get-by-id
+: else-if api.is-get-by-id
 :
   it('/GET {{entity_name}}/:id existing', async () => {
     const id = existingId; // Mock valid object id
@@ -202,7 +202,7 @@ describe('{{entity.name}}Controller (integration)', () => {
       .expect(response);
   });
 
-: else if api.is-list
+: else-if api.is-list
 :
   it('/GET {{entity_name}}', async () => {
     const obj = { dummy: true }
@@ -223,5 +223,5 @@ describe('{{entity.name}}Controller (integration)', () => {
       }));
   });
 });
-: endif
-: endfor
+: end-if
+: end-for

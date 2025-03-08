@@ -27,7 +27,7 @@ Company-name : WowCompany
 
 : set-str working_dir
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}/crud
-: endset
+: end-set
 
 : for api in apis
 
@@ -35,73 +35,73 @@ Company-name : WowCompany
 
 	: set-str file_name
 	create.{{entity.name | lowercase}}.ts
-	: endset
+	: end-set
 
 	: set api.cqrs-filename = file_name
 	: set-str api.cqrs-file-import-path
 	./crud/create.{{entity.name | lowercase}}
-	: endset
+	: end-set
 
 	: render-file "entity.create.command" as file_name
 
-: else if api.is-update
+: else-if api.is-update
 
 	: set-str file_name
 	update.{{entity.name | lowercase}}.ts
-	: endset
+	: end-set
 
 	: set api.cqrs-filename = file_name
 	: set-str api.cqrs-file-import-path
 	./crud/update.{{entity.name | lowercase}}
-	: endset
+	: end-set
 	: render-file "entity.update.command" as file_name
 
-: else if api.is-delete
+: else-if api.is-delete
 
 	: set-str file_name
 	delete.{{entity.name | lowercase}}.ts
-	: endset
+	: end-set
 
 	: set api.cqrs-filename = file_name
 	: set-str api.cqrs-file-import-path
 	./crud/delete.{{entity.name | lowercase}}
-	: endset
+	: end-set
 	: render-file "entity.delete.command" as file_name
 
-: else if api.is-get-by-id
+: else-if api.is-get-by-id
 
 	: set-str file_name
 	get.{{entity.name | lowercase}}.byId.ts
-	: endset
+	: end-set
 	: set api.cqrs-filename = file_name
 	: set-str api.cqrs-file-import-path
 	./crud/get.{{entity.name | lowercase}}.byId
-	: endset
+	: end-set
 	: render-file "entity.get.byid.query" as file_name
 
-: else if api.is-list
+: else-if api.is-list
 
 	: set-str file_name
 	list.{{entity.name | lowercase+plural}}.ts
-	: endset
+	: end-set
 
 	: set api.cqrs-filename = file_name
 	: set-str api.cqrs-file-import-path
 	./crud/list.{{entity.name | lowercase+plural}}
-	: endset
+	: end-set
 
 	: render-file "entity.get.all.query" as file_name
 
 : else
 : fatal-error unknown api '{{api.name}}', with type '{{api.type}}'
-: endif
+: end-if
 
 
-: endfor // apis for loop
+: end-for // apis for loop
 
 : set-str working_dir
 /apps/{{module_folder_name}}/src/{{submodule_folder_name}}
-: endset
+: end-set
 
 : render-file "entity.controller" as "controller.ts"
 : render-file "entity.controller.testing" as "controller.test.ts"
@@ -111,18 +111,18 @@ Company-name : WowCompany
 : render-file "api.invoke.rest.client" as "requests.http"
 
 
-: endfor // entity for loop
+: end-for // entity for loop
 
 : set-str working_dir
 /apps/{{module_folder_name}}/src/
-: endset
+: end-set
 
 : render-file "app.module" as "app.module.ts"
 : render-file "app.main" as "main.ts"
 
 : set-str working_dir
 /apps/{{module_folder_name}}/
-: endset
+: end-set
 
 : render-file "app.tsconfig.json" as "tsconfig.app.json"
 : render-file "app.jest.config.js" as "jest.config.js"
@@ -131,11 +131,11 @@ Company-name : WowCompany
 : set working_dir = "/docs/class-diag"
 : set-str file_name
 {{module_folder_name}}.puml
-: endset
+: end-set
 
 : render-file "plantuml.classes" as file_name
 
-: endfor // modules for loop
+: end-for // modules for loop
 
 : set working_dir = "/"
 

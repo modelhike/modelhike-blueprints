@@ -27,7 +27,7 @@
     },
 : else
     }
-: endif
-: endfor
+: end-if
+: end-for
   }
 }

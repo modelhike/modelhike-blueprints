@@ -2,8 +2,8 @@ import {
 : for common in @container.commons
 : for type in common.types
 {{type.name}},
-: endfor
-: endfor
+: end-for
+: end-for
 } from './common.classes';
 :
 
@@ -13,10 +13,10 @@ import {
 export class {{type.name}} {
 : for property in type.properties
  {{property.name}}!: {{property | typename}};
-: endfor
+: end-for
 }
 :
 
-: endfor
+: end-for
 
-: endfor
+: end-for

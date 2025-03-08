@@ -9,16 +9,16 @@ import java.util.ArrayList;
 import lombok.Data;
 : if module.has-embedded-types
 import {{module_pkg_name}}.types.*;
-: endif
+: end-if
 
 :
 @Data
 public class {{entity.name}}Input {
-: for property in entity.properties  
+: for property in entity.properties
 : if property.is-array
   private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
 : else
   private {{property | typename}} {{property.name}};
-: endif
-: endfor 
+: end-if
+: end-for
 }

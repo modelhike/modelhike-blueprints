@@ -1,10 +1,10 @@
 : set dbCollection = entity.name | split-camel-to-kebabcase
 : set-str api.cqrs-name
 Update{{entity.name}}Command
-: endset
+: end-set
 : set-str api.cqrs-handler-name
 Update{{entity.name}}CommandHandler
-: endset
+: end-set
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DBClient } from 'libs/db/db.client';
 import { UserSessionJwt } from 'libs/auth/auth.token';

@@ -6,16 +6,16 @@ hide circle
 title {{ module.name }}
 :
 
-: for type in module.types 
+: for type in module.types
 class {{type.name}} {
-: for property in type.properties  
+: for property in type.properties
  {{property.name}}: {{property | typename}}
-: endfor 
+: end-for
 }
 
 :
 
-: endfor 
+: end-for
 
 :
 @enduml

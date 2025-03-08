@@ -25,7 +25,7 @@ import {{entity_pkg_name}}.crud.*;
 :
 : set-str entityname_lower
 {{entity.name | lowercase}}
-: endset
+: end-set
 
 @Controller
 public class {{entity.name}}Controller {
@@ -51,7 +51,7 @@ public class {{entity.name}}Controller {
       {{entityname_lower}}Publisher.connect();
   }
 :
-: endif
+: end-if
 
 : for api in apis
 
@@ -68,7 +68,7 @@ public class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-update
+: else-if api.is-update
   @MutationMapping("{{api.name}}")
   public Mono<{{entity.name}}> update{{entity.name}}(@Argument("input") {{entity.name}}Input payload) {
 //      await {{entity.name}}Validator.validateForUpdate(payload);
@@ -79,7 +79,7 @@ public class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-delete
+: else-if api.is-delete
   @MutationMapping("{{api.name}}")
   public Mono<Void> delete{{entity.name}}(@Argument("_id") String id) {
   //    if (!ObjectId.isValid(id)) {
@@ -91,7 +91,7 @@ public class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-get-by-id
+: else-if api.is-get-by-id
   @QueryMapping("{{api.name}}")
   public Mono<{{entity.name}}> get{{entity.name}}ById(@Argument("_id") String id) {
 //      if (!ObjectId.isValid(id)) {
@@ -103,7 +103,7 @@ public class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-list
+: else-if api.is-list
 
   @QueryMapping("{{api.name}}")
   public Flux<{{entity.name}}> list{{entity.name | plural}}() {
@@ -116,7 +116,7 @@ public class {{entity.name}}Controller {
 
   }
 :
-: else if api.is-list-by-custom-props
+: else-if api.is-list-by-custom-props
 
 : set-str argsWithType
 : spaceless
@@ -125,13 +125,13 @@ public class {{entity.name}}Controller {
     @Argument🔥 ArrayList<{{property | typename}}>🔥{{property.name}}
 : else
     @Argument🔥{{property | typename}}🔥{{property.name}}
-: endif
+: end-if
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
 : set-str argsWithoutType
 : spaceless
@@ -139,11 +139,11 @@ public class {{entity.name}}Controller {
 {{property.name}}
     : if not @loop.last
     ,🔥
-    : endif
+    : end-if
 
-: endfor
-: endspaceless
-: endset
+: end-for
+: end-spaceless
+: end-set
 
   @QueryMapping("{{api.name | lowerFirst}}")
   public Flux<{{entity.name}}> {{api.name | lowerFirst}}({{argsWithType}}) {
@@ -156,7 +156,7 @@ public class {{entity.name}}Controller {
 
   }
 :
-: else if api.is-push-data
+: else-if api.is-push-data
 
   @SubscriptionMapping
   public ConnectableFlux<{{entity.name}}> {{entity.name | plural}}Subscription() {
@@ -164,7 +164,7 @@ public class {{entity.name}}Controller {
       return {{entityname_lower}}Publisher;
   }
 :
-: else if api.is-push-datalist
+: else-if api.is-push-datalist
 
   @SubscriptionMapping
   public ConnectableFlux<{{entity.name}}> {{entity.name | plural}}Subscription() {
@@ -172,7 +172,7 @@ public class {{entity.name}}Controller {
       return {{entityname_lower}}Publisher;
   }
 :
-: else if api.is-get-by-custom-logic
+: else-if api.is-get-by-custom-logic
 
 : set-str argsWithType
 : spaceless
@@ -180,10 +180,10 @@ public class {{entity.name}}Controller {
     @Argument🔥{{param.type | typename}}🔥{{param.name}}
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
 : set-str argsWithoutType
 : spaceless
@@ -191,11 +191,11 @@ public class {{entity.name}}Controller {
 {{param.name}}
     : if not @loop.last
     ,🔥
-    : endif
+    : end-if
 
-: endfor
-: endspaceless
-: endset
+: end-for
+: end-spaceless
+: end-set
 
   @QueryMapping("{{api.name}}")
   public Mono<{{api.return-type | typename}}> {{api.name | lowerFirst}}({{argsWithType}}) {
@@ -203,7 +203,7 @@ public class {{entity.name}}Controller {
       return cmd.run({{argsWithoutType}});
   }
 :
-: else if api.is-list-by-custom-logic
+: else-if api.is-list-by-custom-logic
 
 : set-str argsWithType
 : spaceless
@@ -211,10 +211,10 @@ public class {{entity.name}}Controller {
     @Argument🔥{{param.type | typename}}🔥{{param.name}}
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
 : set-str argsWithoutType
 : spaceless
@@ -222,11 +222,11 @@ public class {{entity.name}}Controller {
 {{param.name}}
     : if not @loop.last
     ,🔥
-    : endif
+    : end-if
 
-: endfor
-: endspaceless
-: endset
+: end-for
+: end-spaceless
+: end-set
 
   @QueryMapping("{{api.name}}")
   public Flux<{{api.return-type | typename}}> {{api.name | lowerFirst}}({{argsWithType}}) {
@@ -234,7 +234,7 @@ public class {{entity.name}}Controller {
       return cmd.run({{argsWithoutType}});
   }
 :
-: else if api.is-mutation-by-custom-logic
+: else-if api.is-mutation-by-custom-logic
 
 : set-str argsWithType
 : spaceless
@@ -242,10 +242,10 @@ public class {{entity.name}}Controller {
     @Argument🔥{{param.type | typename}}🔥{{param.name}}
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
 : set-str argsWithoutType
 : spaceless
@@ -253,11 +253,11 @@ public class {{entity.name}}Controller {
 {{param.name}}
     : if not @loop.last
     ,🔥
-    : endif
+    : end-if
 
-: endfor
-: endspaceless
-: endset
+: end-for
+: end-spaceless
+: end-set
 
   @MutationMapping("{{api.name}}")
   public Mono<{{api.return-type | typename}}> {{api.name | lowerFirst}}({{argsWithType}}) {
@@ -265,6 +265,6 @@ public class {{entity.name}}Controller {
       return cmd.run({{argsWithoutType}});
   }
 :
-: endif
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop
 }

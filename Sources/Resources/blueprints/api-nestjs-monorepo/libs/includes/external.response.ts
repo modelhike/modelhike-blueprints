@@ -20,9 +20,9 @@ export class ExternalResponse {
     static async query(response: InternalResponse) {
     if (response?.result) {
       return await ExternalResponse.queryOk(response?.result);
-    } else if (response?.error?.statusCode === 400) {
+    } else-if (response?.error?.statusCode === 400) {
       return await ExternalResponse.badRequest(response?.error?.message);
-    } else if (response?.isEmptyData === true) {
+    } else-if (response?.isEmptyData === true) {
       return await ExternalResponse.emptyData();
     } else {
       return await ExternalResponse.failure(response?.error);
@@ -32,9 +32,9 @@ export class ExternalResponse {
   static async command(response: InternalResponse, data = false) {
     if (response?.result) {
       return await ExternalResponse.commandOk(response?.result, data);
-    } else if (response?.error?.statusCode === 400) {
+    } else-if (response?.error?.statusCode === 400) {
       return await ExternalResponse.badRequest(response?.error?.message);
-    } else if (response?.isEmptyData === true) {
+    } else-if (response?.isEmptyData === true) {
       return await ExternalResponse.emptyData();
     } else {
       return await ExternalResponse.failure(response?.error);

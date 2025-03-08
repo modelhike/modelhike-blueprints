@@ -11,7 +11,7 @@ import { {{entity.name}}Validator } from './validator';
 //import { RolesGuard } from '../ACL/roles.guard';
 : for api in apis
 import { {{api.cqrs-filename}} } from '{{api.cqrs-file-import-path}}';
-: endfor
+: end-for
 
 :
 //@UseGuards(RolesGuard)
@@ -39,7 +39,7 @@ export class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-update
+: else-if api.is-update
   @Put()
   async update{{entity.name}}(@Body() payload: {{entity.name}}, @Req() request: any): Promise<any> {
       await {{entity.name}}Validator.validateForUpdate(payload);
@@ -50,7 +50,7 @@ export class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-delete
+: else-if api.is-delete
   @Delete('{{api.path}}')
   async delete{{entity.name}}(@Param('id') id: string, @Req() request: any): Promise<any> {
       if (!ObjectId.isValid(id)) {
@@ -63,7 +63,7 @@ export class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-get-by-id
+: else-if api.is-get-by-id
   @Get('{{api.path}}')
   async get{{entity.name}}ById(@Param('id') id: string): Promise<any> {
       if (!ObjectId.isValid(id)) {
@@ -76,7 +76,7 @@ export class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-list
+: else-if api.is-list
 
 : func getQueryParamString( propMapping, entity )
   : spaceless
@@ -86,11 +86,11 @@ export class {{entity.name}}Controller {
       string
     : else
       {{ property | typename }}
-    : endif
+    : end-if
   : else
     any
-  : endif
-  : endspaceless
+  : end-if
+  : end-spaceless
 : endfunc
 
 : func getQueryParamNameAsQueryInput( param )
@@ -101,22 +101,22 @@ export class {{entity.name}}Controller {
     : if param.has-second-param-name
     ,
     {{param.second-param-name}}
-    : endif
-  : endif
+    : end-if
+  : end-if
 : endfunc
 
 : func getQuerySplitStatementsIfAny( param )
   : if param.has-multiple-params
     const {{param.param-name}}List = {{param.param-name}}?.length ? {{param.param-name}}.split(',') : null;
     const target{{param.param-name}} = new Set({{param.param-name}}List);
-  : endif
+  : end-if
 : endfunc
 
 : if api.has-path
   @Get('\(api.path)')
 : else
   @Get()
-: endif
+: end-if
   async Find{{entity.name | plural}}(
     @Query('page', ParseIntPipe) page: number = 1,
     @Query('limit', ParseIntPipe) limit: number = 10,
@@ -124,23 +124,23 @@ export class {{entity.name}}Controller {
     @Query('{{param.param-name}}') {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity : entity ) }}=,
   : if param.has-second-param-name
     @Query('{{param.second-param-name}}') {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first,  entity : entity ) }}= ,
-  : endif
-: endfor
+  : end-if
+: end-for
   ): Promise<any> {
 
 : for param in api.query-params
     : call getQuerySplitStatementsIfAny( param : param )
-: endfor
+: end-for
 
 : set-str paramsInputNames
   : spaceless
   : for param in api.query-params
       : call getQueryParamNameAsQueryInput( param : param)
       ,
-  : endfor
-  : endspaceless
+  : end-for
+  : end-spaceless
 
-: endset
+: end-set
 :
     const response: InternalResponse = await this.queryBus.execute(
         new Find{{entity.name}}ByQuery(page, limit, {{paramsInputNames}})
@@ -150,7 +150,7 @@ export class {{entity.name}}Controller {
   }
 :
 
-: endif
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop
 :
 }

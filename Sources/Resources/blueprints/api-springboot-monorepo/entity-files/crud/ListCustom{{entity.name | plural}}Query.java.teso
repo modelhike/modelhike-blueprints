@@ -27,11 +27,11 @@ import {{entity_pkg_name}}.model.*;
     And
     : else
     Or
-    : endif
-: endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-if
+: end-for
+: end-spaceless
+: end-set
 
 : set-str argsWithType
 : spaceless
@@ -40,13 +40,13 @@ import {{entity_pkg_name}}.model.*;
     ArrayList<{{property | typename}}>🔥{{property.name}}
 : else
     {{property | typename}}🔥{{property.name}}
-: endif
+: end-if
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
 : set-str argsWithoutType
 : spaceless
@@ -54,11 +54,11 @@ import {{entity_pkg_name}}.model.*;
 {{property.name}}
     : if not @loop.last
     ,🔥
-    : endif
+    : end-if
 
-: endfor
-: endspaceless
-: endset
+: end-for
+: end-spaceless
+: end-set
 
 @Component
 public class {{api.name}}Query {

@@ -4,9 +4,9 @@
 export class {{type.name}} {
 : for property in type.properties
  {{property.name}}!: {{property | typename}};
-: endfor
+: end-for
 }
 :
-: endfor
+: end-for
 
-: endfor
+: end-for

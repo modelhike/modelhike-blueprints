@@ -44,7 +44,7 @@ public class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-update
+: else-if api.is-update
   @PutMapping("/{{urlPath}}")
   @ResponseStatus(HttpStatus.OK)
   public Mono<{{entity.name}}> update{{entity.name}}(@RequestBody() {{entity.name}}Input payload) {
@@ -56,7 +56,7 @@ public class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-delete
+: else-if api.is-delete
   @DeleteMapping("/{{urlPath}}/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public Mono<Void> delete{{entity.name}}(@PathVariable String id) {
@@ -69,7 +69,7 @@ public class {{entity.name}}Controller {
   }
 :
 
-: else if api.is-get-by-id
+: else-if api.is-get-by-id
   @GetMapping("/{{urlPath}}/{id}")
   @ResponseStatus(HttpStatus.OK)
   public Mono<{{entity.name}}> get{{entity.name}}ById(@PathVariable String id) {
@@ -77,13 +77,13 @@ public class {{entity.name}}Controller {
 //        return ExternalResponse.badRequest('Invalid Request!!');
 //      }
 :
-      var cmd = ctx.getBean(Get{{entity.name}}ByIdQuery.class);      
+      var cmd = ctx.getBean(Get{{entity.name}}ByIdQuery.class);
       return cmd.run(id);
 
   }
 :
 
-: else if api.is-list
+: else-if api.is-list
 
   @GetMapping("/{{urlPath}}")
   @ResponseStatus(HttpStatus.OK)
@@ -92,14 +92,14 @@ public class {{entity.name}}Controller {
 //        return ExternalResponse.badRequest('Invalid Request!!');
 //      }
 :
-      var cmd = ctx.getBean(List{{entity.name | plural}}Query.class);      
+      var cmd = ctx.getBean(List{{entity.name | plural}}Query.class);
       return cmd.run();
 
   }
 :
 
-: endif 
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop
 :
 
 }

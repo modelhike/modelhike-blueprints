@@ -2,7 +2,7 @@
 : set randomID = @mock.object-id
 : set-str baseUrlString
 {{ "{" }}{baseurl}}
-: endset // workaround: as escaping '{' is not supported #}
+: end-set // workaround: as escaping '{' is not supported #}
 @baseurl = http://localhost:{{module.port}}/graphql
 :
 : for api in apis
@@ -22,7 +22,7 @@ mutation {{api.name}}($input: {{entity.name}}Input) {
    "input": { {{api.entity | sample-json }} }
 }
 :
-: else if api.is-update
+: else-if api.is-update
 
 ### Update by id
 GRAPHQL {{baseUrlString}}
@@ -38,7 +38,7 @@ mutation {{api.name}}($input: {{entity.name}}Input) {
     "_id": "{{randomID}}",{{api.entity | sample-json }} }
 }
 :
-: else if api.is-delete
+: else-if api.is-delete
 
 ### Delete by id
 GRAPHQL {{baseUrlString}}
@@ -47,7 +47,7 @@ mutation {
   {{api.name}}(_id : "{{randomID}}")
 }
 :
-: else if api.is-get-by-id
+: else-if api.is-get-by-id
 
 ### Get by id
 GRAPHQL {{baseUrlString}}
@@ -58,7 +58,7 @@ query {
   }
 }
 :
-: else if api.is-list
+: else-if api.is-list
 
 ### Get All with filters
 GRAPHQL {{baseUrlString}}
@@ -78,7 +78,7 @@ query {
   }
 }
 :
-: else if api.is-push-data
+: else-if api.is-push-data
 
 ### Subscriptions
 GRAPHQL {{baseUrlString}}
@@ -89,7 +89,7 @@ subscription {
   }
 }
 :
-: else if api.is-push-datalist
+: else-if api.is-push-datalist
 
 ### Subscriptions
 GRAPHQL {{baseUrlString}}
@@ -100,13 +100,13 @@ subscription {
   }
 }
 :
-: else if api.is-list-by-custom-props
+: else-if api.is-list-by-custom-props
 
 : set-str argsWithType
 : for property in api.properties-involved
     {{property.name}} : {{property | sample-value}},
-: endfor
-: endset
+: end-for
+: end-set
 
 ### {{api.givenname}}
 GRAPHQL {{baseUrlString}}
@@ -119,13 +119,13 @@ query {
   }
 }
 :
-: else if api.is-get-by-custom-logic
+: else-if api.is-get-by-custom-logic
 
 : set-str argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
-: endfor
-: endset
+: end-for
+: end-set
 
 ### {{api.givenname}}
 GRAPHQL {{baseUrlString}}
@@ -138,13 +138,13 @@ query {
   }
 }
 :
-: else if api.is-list-by-custom-logic
+: else-if api.is-list-by-custom-logic
 
 : set-str argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
-: endfor
-: endset
+: end-for
+: end-set
 
 ### {{api.givenname}}
 GRAPHQL {{baseUrlString}}
@@ -157,13 +157,13 @@ query {
   }
 }
 :
-: else if api.is-mutation-by-custom-logic
+: else-if api.is-mutation-by-custom-logic
 
 : set-str argsWithType
 : for param in api.custom-params
     {{param.name}} : {{param.type | sample-value}},
-: endfor
-: endset
+: end-for
+: end-set
 
 ### {{api.givenname}}
 GRAPHQL {{baseUrlString}}
@@ -176,8 +176,8 @@ mutation {
   }
 }
 :
-: endif
-: endfor // apis for loop
+: end-if
+: end-for // apis for loop
 :
 
 
@@ -191,7 +191,7 @@ mutation {
     }
     : else
     {{property.name}}
-    : endif
+    : end-if
 
-: endfor
+: end-for
 : endfunc

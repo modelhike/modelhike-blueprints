@@ -10,7 +10,7 @@ api-base-path : /api/v1
 : set module_folder_name = module.name| lowercase + kebabcase
 : set-str module_pkg_name
 {{company-pkg-prefix}}.{{module.name| package-case + lowercase}}
-: endset
+: end-set
 : set module_folder_structure = module_pkg_name | replace(".", "/") //for creating java package structure
 
 : for entity in module.entities-and-dtos
@@ -18,43 +18,43 @@ api-base-path : /api/v1
 //: set entity.folder_name = submodule_folder_name
 : set-str entity_pkg_name
 {{module_pkg_name}}.{{submodule_pkg_name}}
-: endset
+: end-set
 
 : set apis = entity | apis
 
 : set-str entity_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/{{submodule_pkg_name}}/
-: endset
+: end-set
 
 : render-folder "entity-files" to entity_dir
 //: render-folder "entity-rest-api" to entity_dir
 : render-folder "entity-graphql-api" to entity_dir
 
-: endfor // entity for loop
+: end-for // entity for loop
 
 : ----------- embedded types -------------
 : for embedded-type in module.embedded-types
 : set-str embedded_type_pkg_name
 {{module_pkg_name}}.types
-: endset
+: end-set
 
 : set-str embedded_type_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/types/
-: endset
+: end-set
 :
 : render-folder "embedded-type-files" to embedded_type_dir
 :
-: endfor // embedded type for loop
+: end-for // embedded type for loop
 
 : set-str  module_dir
 /base-services/{{module_folder_name}}/
-: endset
+: end-set
 
 : render-folder "base-service-files" to module_dir
 
 : set-str module_src_dir
 /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/
-: endset
+: end-set
 
 : render-folder "base-service-files-src" to module_src_dir
 
@@ -64,11 +64,11 @@ api-base-path : /api/v1
 : set working_dir = "/docs/class-diag"
 : set-str file_name
 {{module_folder_name}}.puml
-: endset
+: end-set
 
 : render-file "plantuml.classes" as file_name
 
-: endfor // modules for loop
+: end-for // modules for loop
 
 : -------------- functions area -----------------------------------
 
@@ -76,11 +76,11 @@ api-base-path : /api/v1
     // generate graphQL schema
     : set-str working_dir
     /base-services/{{module_folder_name}}/resources/graphql
-    : endset
+    : end-set
 
     : set-str file_name
     {{module_folder_name}}.graphqls
-    : endset
+    : end-set
 
     : render-file "graphql-schema-module" as file_name
 : endfunc

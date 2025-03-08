@@ -1,5 +1,5 @@
 : for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 include ':base-services:{{module_folder_name}}'
-: endfor
+: end-for
 include ':libs'

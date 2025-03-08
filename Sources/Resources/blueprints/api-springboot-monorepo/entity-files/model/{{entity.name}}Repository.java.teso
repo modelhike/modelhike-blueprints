@@ -22,11 +22,11 @@ public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{ent
     And
     : else
     Or
-    : endif
-: endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-if
+: end-for
+: end-spaceless
+: end-set
 
 : set-str argsWithType
 : spaceless
@@ -35,16 +35,16 @@ public interface {{entity.name}}Repository extends ReactiveMongoRepository<{{ent
     ArrayList<{{property | typename}}>🔥{{property.name}}
 : else
     {{property | typename}}🔥{{property.name}}
-: endif
+: end-if
     : if not @loop.last
     ,🔥
-    : endif
-: endfor
-: endspaceless
-: endset
+    : end-if
+: end-for
+: end-spaceless
+: end-set
 
     Flux<{{entity.name}}> findBy{{propsConcat}}({{argsWithType}});
 
-: endif
-: endfor
+: end-if
+: end-for
 }

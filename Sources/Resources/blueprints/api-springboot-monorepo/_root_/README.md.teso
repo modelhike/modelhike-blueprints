@@ -6,7 +6,7 @@ Following microservices are available:
 : for module in @container.modules
 : set module_folder_name = module.name| lowercase + kebabcase
 - {{module.name}} -> {{module_folder_name}}
-: endfor
+: end-for
 :
 # Folder Structure
 - apps - has all the Module-specific microservices, like ESM, etc

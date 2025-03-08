@@ -1,10 +1,10 @@
 : set dbCollection = entity.name | split-camel-to-kebabcase
 : set-str api.cqrs-name
 Find{{entity.name}}ByQuery
-: endset
+: end-set
 : set-str api.cqrs-handler-name
 Find{{entity.name}}QueryHandler
-: endset
+: end-set
 
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DBClient } from 'libs/db/db.client';
@@ -21,12 +21,12 @@ import { InternalResponse } from 'libs/includes/internal.response';
         Set<{{ property | typename }}>
       : else
         {{ property | typename }}
-      : endif
-    : endif
+      : end-if
+    : end-if
   : else
     any
-  : endif
-  : endspaceless
+  : end-if
+  : end-spaceless
 : endfunc
 
 :
@@ -38,8 +38,8 @@ export class Find{{entity.name}}ByQuery {
     public readonly {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity :  entity ) }}=,
   : if param.has-second-param-name
     public readonly {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity :  entity ) }}=,
-  : endif
-  : endfor
+  : end-if
+  : end-for
  ) {}
 :
   async run(): Promise<InternalResponse> {
@@ -68,7 +68,7 @@ export class Find{{entity.name}}ByQuery {
   : for param in api.query-params
     {{ param | filter-string }}
   :
-  : endfor
+  : end-for
 :
       return query;
     }
