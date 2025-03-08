@@ -194,4 +194,4 @@ mutation {
     : end-if
 
 : end-for
-: endfunc
+: end-func

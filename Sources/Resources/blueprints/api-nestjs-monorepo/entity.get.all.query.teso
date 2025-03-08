@@ -27,7 +27,7 @@ import { InternalResponse } from 'libs/includes/internal.response';
     any
   : end-if
   : end-spaceless
-: endfunc
+: end-func
 
 :
 export class Find{{entity.name}}ByQuery {

@@ -83,4 +83,4 @@ api-base-path : /api/v1
     : end-set
 
     : render-file "graphql-schema-module" as file_name
-: endfunc
+: end-func

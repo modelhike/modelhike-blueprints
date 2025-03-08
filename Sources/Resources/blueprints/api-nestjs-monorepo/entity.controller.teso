@@ -91,7 +91,7 @@ export class {{entity.name}}Controller {
     any
   : end-if
   : end-spaceless
-: endfunc
+: end-func
 
 : func getQueryParamNameAsQueryInput( param )
   : if param.has-multiple-params
@@ -103,14 +103,14 @@ export class {{entity.name}}Controller {
     {{param.second-param-name}}
     : end-if
   : end-if
-: endfunc
+: end-func
 
 : func getQuerySplitStatementsIfAny( param )
   : if param.has-multiple-params
     const {{param.param-name}}List = {{param.param-name}}?.length ? {{param.param-name}}.split(',') : null;
     const target{{param.param-name}} = new Set({{param.param-name}}List);
   : end-if
-: endfunc
+: end-func
 
 : if api.has-path
   @Get('\(api.path)')

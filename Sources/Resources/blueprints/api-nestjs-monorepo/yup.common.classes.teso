@@ -39,7 +39,7 @@ export const bufferValidator = (value: any) => {
     : end-if
   : end-if
   //: end-spaceless
-: endfunc
+: end-func
 
 : func render-type-schema(type)
 
@@ -116,7 +116,7 @@ export const {{type.name}}Schema = Yup.object()
 .noUnknown();
 :
 
-: endfunc
+: end-func
 
 : for common in @container.commons
 // {{ common.name }}
