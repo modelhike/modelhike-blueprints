@@ -13,10 +13,44 @@ struct Development {
     
     static func runCodebaseGeneration() async throws {
         var env = Environment.debug
-        env.containersToOutput = ["APIs"]
-        
-        let pipeline = Pipelines.codegen
         env.blueprints.add(OfficialBlueprintFinder())
+        
+        env.containersToOutput = ["APIs"]
+                
+        //for debugging
+        //config.flags.fileGeneration = true
+        
+//        config.events.onBeforeRenderFile = { filename, context in
+//            if filename.lowercased() == "MonitoredLiveAirport".lowercased() {
+//                print("rendering \(filename)")
+//            }
+//
+//            return true
+//        }
+//
+//        config.events.onBeforeParseTemplate = { templatename, context in
+//            if templatename.lowercased() == "entity.validator.teso".lowercased() {
+//                print("rendering \(templatename)")
+//            }
+//        }
+//
+//        config.events.onBeforeExecuteTemplate = { templatename, context in
+//            if templatename.lowercased() == "entity.validator.teso".lowercased() {
+//                print("rendering \(templatename)")
+//            }
+//        }
+//
+//        config.events.onStartParseObject = { objname, pInfo in
+//            print(objname)
+//            if objname.lowercased() == "airport".lowercased() {
+//                pInfo.ctx.debugLog.flags.lineByLineParsing = true
+//            } else {
+//                pInfo.ctx.debugLog.flags.lineByLineParsing = false
+//            }
+//        }
+                  
+        //continue run
+        let pipeline = Pipelines.codegen
         try await pipeline.run(using: env)
     }
     
