@@ -1,10 +1,10 @@
-import DiagSoup
+import ModelHike
 
 enum Environment {
     static var debug: OutputConfig {
         var env = PipelineConfig()
         
-        env.basePath = LocalPath(relativePath: "diagsoup", basePath: SystemFolder.documents.path)
+        env.basePath = LocalPath(relativePath: "modelhike", basePath: SystemFolder.documents.path)
 
         return env
     }
@@ -12,7 +12,7 @@ enum Environment {
     static var production: OutputConfig {
         var env = PipelineConfig()
 
-        env.basePath = LocalPath(relativePath: "diagsoup", basePath: SystemFolder.documents.path)
+        env.basePath = LocalPath(relativePath: "modelhike", basePath: SystemFolder.documents.path)
 
         return env
     }

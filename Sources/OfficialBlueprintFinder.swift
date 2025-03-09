@@ -1,21 +1,20 @@
 //
 //  ResourceLoader.swift
-//
-//
-//  Created by Hari on 24/07/24.
+//  ModelHike
+//  https://www.github.com/modelhike/modelhike
 //
 
 import Foundation
-import DiagSoup
+import ModelHike
 
-public class OfficialBlueprintFinder : ResourceBlueprintFinder {
+public class OfficialBlueprintFinder: ResourceBlueprintFinder {
     public override func getListOfblueprintsAvailable() -> [String] {
         return [
             "api-nestjs-monorepo",
-            "api-springboot-monorepo"
+            "api-springboot-monorepo",
         ]
     }
-    
+
     public init() {
         super.init(bundle: Bundle.module)
     }

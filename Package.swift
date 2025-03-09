@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "DiagSoup.Blueprints",
+    name: "ModelHike.Blueprints",
     platforms: [
         .macOS(.v13),
         .iOS(.v16),
@@ -10,18 +10,18 @@ let package = Package(
         .watchOS(.v6),
     ],
     products: [
-        .library(name: "DiagSoup.Blueprints", targets: ["DiagSoup_Blueprints"]),
-        .executable(name: "DevTester_Blueprints", targets: ["DevTester_Blueprints"])
+        .library(name: "ModelHike.Blueprints", targets: ["ModelHike_Blueprints"]),
+        .executable(name: "DevTester_Blueprints", targets: ["DevTester_Blueprints"]),
     ],
     dependencies: [
-        //.package(url: "https://github.com/diagsoup/diagsoup", from: "0.1.0"),
-        .package(path: "../diagsoup")
+        //.package(url: "https://github.com/modelhike/modelhike", from: "0.1.0"),
+        .package(path: "../modelhike")
     ],
     targets: [
         .target(
-            name: "DiagSoup_Blueprints",
+            name: "ModelHike_Blueprints",
             dependencies: [
-                .product(name: "DiagSoup", package: "DiagSoup")
+                .product(name: "ModelHike", package: "ModelHike")
             ],
             path: "Sources",
             resources: [
@@ -31,13 +31,13 @@ let package = Package(
         .executableTarget(
             name: "DevTester_Blueprints",
             dependencies: [
-                "DiagSoup_Blueprints",
-                .product(name: "DiagSoup", package: "DiagSoup")
+                "ModelHike_Blueprints",
+                .product(name: "ModelHike", package: "ModelHike"),
             ],
             path: "DevTester"
         ),
         //.testTarget(
-        //    name: "DiagSoup_Blueprints_Tests",
+        //    name: "ModelHike_Blueprints_Tests",
         //    path: "Tests"
         //),
     ]
