@@ -22,6 +22,32 @@ end-set
 
 set apis = entity | apis
 
+// check if only supported apis are passed
+
+for api in apis
+
+if api.is-create
+    // supported
+else-if api.is-update
+    // supported
+else-if api.is-delete
+    // supported
+else-if api.is-get-by-id
+    // supported
+else-if api.is-list
+    // supported
+else-if api.is-mutation-by-custom-logic or api.is-get-by-custom-logic
+    // supported
+else-if api.is-list-by-custom-logic
+    // supported
+else-if api.is-list-by-custom-props
+    // supported
+else
+    fatal-error unknown api '{{api.name}}', with type '{{api.type}}'
+end-if
+
+end-for // apis for loop
+
 set-str entity_dir
 > /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/{{submodule_pkg_name}}/
 end-set

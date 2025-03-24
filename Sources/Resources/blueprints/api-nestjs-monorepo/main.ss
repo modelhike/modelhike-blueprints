@@ -93,7 +93,7 @@ else-if api.is-list
 	render-file "entity.get.all.query" as file_name
 
 else
-fatal-error unknown api '{{api.name}}', with type '{{api.type}}'
+    fatal-error unknown api '{{api.name}}', with type '{{api.type}}'
 end-if
 
 
