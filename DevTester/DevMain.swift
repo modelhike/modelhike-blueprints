@@ -13,7 +13,7 @@ struct Development {
 
     static func runCodebaseGeneration() async throws {
         var env = Environment.debug
-        env.blueprints.add(OfficialBlueprintFinder())
+        env.blueprints.append(OfficialBlueprintFinder())
 
         env.containersToOutput = ["APIs"]
 
@@ -62,12 +62,12 @@ struct Development {
         //        }
 
         //continue run
-        let pipeline = Pipelines.codegen
+        let pipeline = await Pipelines.codegen
         try await pipeline.run(using: env)
     }
 
-    private static func inlineModel(_ ws: Workspace) -> InlineModelLoader {
-        return InlineModelLoader(with: ws.context) {
+    private static func inlineModel(_ ws: Workspace) async -> InlineModelLoader {
+        return await InlineModelLoader(with: ws.context) {
             InlineModel {
                 """
                 ===
