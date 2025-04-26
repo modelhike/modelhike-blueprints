@@ -37,7 +37,11 @@ if api.is-create
 	> create.{{entity.name | lowercase}}.ts
 	end-set
 
-	set api.cqrs-filename = file_name
+	set-str classname
+	> Create{{entity.name}}Command
+	end-set
+
+	set api.cqrs-classname = classname
 	set-str api.cqrs-file-import-path
 	> ./crud/create.{{entity.name | lowercase}}
 	end-set
@@ -50,7 +54,11 @@ else-if api.is-update
 	> update.{{entity.name | lowercase}}.ts
 	end-set
 
-	set api.cqrs-filename = file_name
+	set-str classname
+	> Update{{entity.name}}Command
+	end-set
+
+	set api.cqrs-classname = classname
 	set-str api.cqrs-file-import-path
 	> ./crud/update.{{entity.name | lowercase}}
 	end-set
@@ -62,7 +70,11 @@ else-if api.is-delete
 	> delete.{{entity.name | lowercase}}.ts
 	end-set
 
-	set api.cqrs-filename = file_name
+	set-str classname
+	> Delete{{entity.name}}Command
+	end-set
+
+	set api.cqrs-classname = classname
 	set-str api.cqrs-file-import-path
 	> ./crud/delete.{{entity.name | lowercase}}
 	end-set
@@ -73,7 +85,12 @@ else-if api.is-get-by-id
 	set-str file_name
 	> get.{{entity.name | lowercase}}.byId.ts
 	end-set
-	set api.cqrs-filename = file_name
+
+	set-str classname
+	> Get{{entity.name}}Query
+	end-set
+
+	set api.cqrs-classname = classname
 	set-str api.cqrs-file-import-path
 	> ./crud/get.{{entity.name | lowercase}}.byId
 	end-set
@@ -85,7 +102,11 @@ else-if api.is-list
 	> list.{{entity.name | lowercase+plural}}.ts
 	end-set
 
-	set api.cqrs-filename = file_name
+	set-str classname
+	> Find{{entity.name}}ByQuery
+	end-set
+
+	set api.cqrs-classname = classname
 	set-str api.cqrs-file-import-path
 	> ./crud/list.{{entity.name | lowercase+plural}}
 	end-set

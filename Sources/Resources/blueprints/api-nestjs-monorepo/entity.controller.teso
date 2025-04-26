@@ -10,7 +10,7 @@ import { {{entity.name}}Validator } from './validator';
 //import { AuthGuard } from '@nestjs/passport';
 //import { RolesGuard } from '../ACL/roles.guard';
 : for api in apis
-import { {{api.cqrs-filename}} } from '{{api.cqrs-file-import-path}}';
+import { {{api.cqrs-classname}} } from '{{api.cqrs-file-import-path}}';
 : end-for
 
 :
