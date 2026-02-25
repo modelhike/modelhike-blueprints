@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:modelhike-blueprints}",
+            "name": "Debug DevTester_Blueprints",
+            "target": "DevTester_Blueprints",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug DevTester_Blueprints"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:modelhike-blueprints}",
+            "name": "Release DevTester_Blueprints",
+            "target": "DevTester_Blueprints",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release DevTester_Blueprints"
+        }
+    ]
+}
