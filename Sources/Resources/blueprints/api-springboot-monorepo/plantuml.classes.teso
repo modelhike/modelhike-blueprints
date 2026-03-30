@@ -11,6 +11,11 @@ class {{type.name}} {
 : for property in type.properties
  {{property.name}}: {{property | typename}}
 : end-for
+: if type.has-methods
+: for method in type.methods
+ +{{method.name}}({{method | java-method-params}}) : {{method | java-return-type}}
+: end-for
+: end-if
 }
 
 :

@@ -5,6 +5,12 @@ spring:
   data:
     mongodb:
       uri: {{db-uri}}
+  # Optional SQL access (spring-boot-starter-data-r2dbc + r2dbc-postgresql in build.gradle).
+  # Uncomment and set when using DatabaseClient / R2dbcEntityTemplate from generated logic.
+  # r2dbc:
+  #   url: r2dbc:postgresql://localhost:5432/appdb
+  #   username: postgres
+  #   password: changeme
   webflux:
     cors:
       allowed-origins: "{{allowed-cors-url}}"

@@ -5,6 +5,25 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.ArrayList;
 import lombok.Data;
+: if (entity.has-db-logic) or (entity.has-db-txn-logic) or (entity.has-http-logic) or (entity.has-ws-logic) or (entity.has-grpc-logic)
+import org.springframework.beans.factory.annotation.Autowired;
+: end-if
+: if entity.has-db-logic
+import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+: end-if
+: if entity.has-db-txn-logic
+import org.springframework.transaction.ReactiveTransactionManager;
+: end-if
+: if entity.has-http-logic
+import org.springframework.web.reactive.function.client.WebClient;
+: end-if
+: if entity.has-ws-logic
+import org.springframework.web.reactive.socket.client.WebSocketClient;
+: end-if
+: if entity.has-grpc-logic
+import io.grpc.ManagedChannel;
+: end-if
 : if module.has-embedded-types
 import {{module_pkg_name}}.types.*;
 : end-if
@@ -13,6 +32,28 @@ import {{module_pkg_name}}.types.*;
 @Data
 @Document(collection = "{{dbCollection}}")
 public class {{entity.name}} {
+: if entity.has-db-logic
+  @Autowired
+  private DatabaseClient databaseClient;
+  @Autowired
+  private R2dbcEntityTemplate r2dbcEntityTemplate;
+: end-if
+: if entity.has-db-txn-logic
+  @Autowired
+  private ReactiveTransactionManager transactionManager;
+: end-if
+: if entity.has-http-logic
+  @Autowired
+  private WebClient webClient;
+: end-if
+: if entity.has-ws-logic
+  @Autowired(required = false)
+  private WebSocketClient webSocketClient;
+: end-if
+: if entity.has-grpc-logic
+  @Autowired(required = false)
+  private ManagedChannel grpcManagedChannel;
+: end-if
 : for property in entity.properties
 : if property.is-array
   private ArrayList<{{property | typename}}> {{property.name}} = new ArrayList<>();
@@ -20,6 +61,20 @@ public class {{entity.name}} {
   private {{property | typename}} {{property.name}};
 : end-if
 : end-for
+:
+: if entity.has-methods
+:
+: for method in entity.methods
+  public {{method | java-return-type}} {{method.name}}({{method | java-method-params}}) {
+: if method.has-logic
+{{method | java-method-body}}
+: else
+      // TODO: implement
+: end-if
+  }
+:
+: end-for
+: end-if
 :
 // : for property in entity.properties
 //   public {{property | typename}} {{property.name}}() {

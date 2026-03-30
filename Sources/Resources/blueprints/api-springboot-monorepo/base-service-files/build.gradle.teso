@@ -26,10 +26,13 @@ repositories {
 dependencies {
     //implementation project(':libs')
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    runtimeOnly 'org.postgresql:r2dbc-postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'org.springframework.boot:spring-boot-starter-rsocket'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+    implementation 'io.grpc:grpc-api'
     implementation 'joda-time:joda-time:2.12.5'
     compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

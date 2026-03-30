@@ -62,7 +62,7 @@ struct Development {
         //        }
 
         //continue run
-        let pipeline = await Pipelines.codegen
+        let pipeline = Pipelines.codegen
         try await pipeline.run(using: env)
     }
 

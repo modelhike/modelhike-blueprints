@@ -1,0 +1,11 @@
+---
+input: method
+type: Object
+---
+: spaceless
+: if method.has-return-type
+{{method.return-type | typename}}
+: else
+void
+: end-if
+: end-spaceless

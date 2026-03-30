@@ -1,0 +1,188 @@
+---
+input: method
+type: Object
+---
+: for line in method.logic-lines
+: if line.is-close
+: if (line.closing-kind == "if") or (line.closing-kind == "elseif") or (line.closing-kind == "else") or (line.closing-kind == "for") or (line.closing-kind == "while") or (line.closing-kind == "try") or (line.closing-kind == "catch") or (line.closing-kind == "finally") or (line.closing-kind == "switch") or (line.closing-kind == "case") or (line.closing-kind == "default")
+{{line.indent}}}
+: else-if line.closing-kind == "sql"
+{{line.parent-indent}})
+: else-if line.closing-kind in ["db-raw", "db-proc-call"]
+: if line.merged-db-raw-result-let
+{{line.chain-indent}}.map((row, rowMetadata) -> row.get("{{line.merged-db-raw-result-let}}", Integer.class)).first().block();
+: else
+{{line.chain-indent}}.fetch().first().block();
+: end-if
+: else-if line.closing-kind == "db"
+{{line.indent}};
+: end-if
+: else-if line.kind == "if"
+{{line.indent}}if ({{line.condition}}) {
+: else-if line.kind == "elseif"
+{{line.indent}}} else if ({{line.condition}}) {
+: else-if line.kind == "else"
+{{line.indent}}} else {
+: else-if line.kind == "for"
+{{line.indent}}for (var {{line.for-item}} : {{line.for-collection}}) {
+: else-if line.kind == "while"
+{{line.indent}}while ({{line.condition}}) {
+: else-if line.kind == "return"
+: if line.expression
+{{line.indent}}return {{line.expression}};
+: else
+{{line.indent}}return;
+: end-if
+: else-if line.kind == "assign"
+: if line.parent-kind == "params"
+: if line.assign-lhs == line.assign-rhs
+{{line.indent}}.bind("{{line.assign-lhs}}", io.r2dbc.spi.Parameters.out(io.r2dbc.spi.R2dbcType.INTEGER))
+: else
+{{line.indent}}.bind("{{line.assign-lhs}}", {{line.assign-rhs}})
+: end-if
+: else
+{{line.indent}}{{line.assign-lhs}} = {{line.assign-rhs}};
+: end-if
+: else-if line.kind == "call"
+{{line.indent}}{{line.call-expression}};
+: else-if line.kind == "let"
+{{line.indent}}var {{line.let-name}} = {{line.expression}};
+: else-if line.kind == "try"
+{{line.indent}}try {
+: else-if line.kind == "catch"
+: if line.catch-type
+{{line.indent}}} catch ({{line.catch-type}} {{line.catch-variable}}) {
+: else
+{{line.indent}}} catch (Exception {{line.catch-variable}}) {
+: end-if
+: else-if line.kind == "finally"
+{{line.indent}}} finally {
+: else-if line.kind == "throw"
+{{line.indent}}throw {{line.expression}};
+: else-if line.kind == "switch"
+{{line.indent}}switch ({{line.switch-subject}}) {
+: else-if line.kind == "case"
+{{line.indent}}case {{line.case-value}}:
+: else-if line.kind == "default"
+{{line.indent}}default:
+: else-if line.kind == "break"
+{{line.indent}}break;
+: else-if line.kind == "continue"
+{{line.indent}}continue;
+: else-if line.kind == "expr"
+{{line.indent}}{{line.expression}};
+: else-if line.kind == "db-raw"
+{{line.indent}}// db-raw: {{line.expression}}
+: else-if line.kind == "sql"
+: if line.merged-db-raw-result-let
+{{line.parent-indent}}int {{line.merged-db-raw-result-let}} = databaseClient.sql(
+: else
+{{line.parent-indent}}databaseClient.sql(
+: end-if
+: else-if line.kind == "unknown"
+: if line.parent-kind == "sql"
+{{line.indent}}"{{line.expression}}"
+: else-if line.is-open
+{{line.indent}}// unknown: {{line.expression}} {
+: else-if line.is-leaf
+{{line.indent}}// unknown: {{line.expression}}
+: else
+{{line.indent}}// unknown: {{line.expression}}
+: end-if
+: else-if line.kind == "params"
+: if (line.parent-kind == "db-raw") or (line.parent-kind == "db-proc-call")
+: else-if line.is-open
+{{line.indent}}// TODO: params {
+: else-if line.is-leaf
+{{line.indent}}// TODO: params: {{line.expression}}
+: else
+{{line.indent}}// TODO: params {{line.expression}}
+: end-if
+: else-if line.kind == "db"
+: if line.let-name
+{{line.indent}}var {{line.let-name}} = r2dbcEntityTemplate.select({{line.expression}}.class)
+: else
+{{line.indent}}var dbResult = r2dbcEntityTemplate.select({{line.expression}}.class)
+: end-if
+: else-if line.kind == "where"
+{{line.indent}}    // where (model): {{line.expression}}
+: else-if line.kind == "include"
+{{line.indent}}    // include: {{line.expression}}
+: else-if line.kind == "order-by"
+{{line.indent}}    // order-by: {{line.expression}}
+: else-if line.kind == "skip"
+{{line.indent}}    // skip: {{line.expression}}
+: else-if line.kind == "take"
+{{line.indent}}    // take: {{line.expression}}
+: else-if line.kind == "to-list"
+{{line.indent}}    .all().collectList().block()
+: else-if line.kind == "first"
+{{line.indent}}    .first().block()
+: else-if line.kind == "single"
+{{line.indent}}    .one().block()
+: else-if line.kind == "db-insert"
+{{line.indent}}r2dbcEntityTemplate.insert({{line.expression}}).block();
+: else-if line.kind == "db-update"
+{{line.indent}}// db-update: {{line.expression}}
+: else-if line.kind == "set"
+{{line.indent}}// set: {{line.expression}}
+: else-if line.kind == "db-delete"
+{{line.indent}}r2dbcEntityTemplate.delete({{line.expression}}).block();
+: else-if line.kind == "db-proc-call"
+: if line.let-name
+{{line.indent}}var {{line.let-name}} = databaseClient.sql("CALL {{line.expression}}")
+: else
+{{line.indent}}var procResult = databaseClient.sql("CALL {{line.expression}}")
+: end-if
+: else-if line.kind == "group-by"
+{{line.indent}}// group-by: {{line.expression}}
+: else-if line.kind == "aggregate"
+{{line.indent}}// aggregate: {{line.expression}}
+: else-if line.kind == "transaction"
+{{line.indent}}org.springframework.transaction.reactive.TransactionalOperator txOp = org.springframework.transaction.reactive.TransactionalOperator.create(transactionManager);
+: else-if line.kind == "commit"
+{{line.indent}}// commit
+: else-if line.kind == "rollback"
+{{line.indent}}// rollback
+: else-if line.kind == "savepoint"
+{{line.indent}}// savepoint: {{line.expression}}
+: else-if line.kind == "db-env"
+{{line.indent}}// db-env: {{line.expression}}
+: else-if line.kind == "needs-review"
+{{line.indent}}// NEEDS REVIEW: {{line.expression}}
+: else-if line.kind == "raw"
+{{line.indent}}// raw: {{line.expression}}
+: else-if line.kind == "note"
+{{line.indent}}// note: {{line.expression}}
+: else-if line.kind == "#if"
+{{line.indent}}// #if {{line.expression}}
+: else-if line.kind == "#else"
+{{line.indent}}// #else
+: else-if line.kind == "#endif"
+{{line.indent}}// #endif
+: else-if (line.kind == "http") or (line.kind == "path") or (line.kind == "query") or (line.kind == "headers") or (line.kind == "auth") or (line.kind == "expect") or (line.kind == "body") or (line.kind == "http-graphql") or (line.kind == "variables") or (line.kind == "grpc") or (line.kind == "payload") or (line.kind == "metadata") or (line.kind == "http-raw")
+: if line.is-open
+{{line.indent}}// TODO: {{line.kind}} {{line.expression}} {
+: else-if line.is-leaf
+{{line.indent}}// TODO: {{line.kind}}: {{line.expression}}
+: else
+{{line.indent}}// TODO: {{line.kind}} {{line.expression}}
+: end-if
+: else-if (line.kind == "pipe") or (line.kind == "filter") or (line.kind == "select") or (line.kind == "map") or (line.kind == "reduce") or (line.kind == "match") or (line.kind == "when") or (line.kind == "endmatch")
+: if line.is-open
+{{line.indent}}// TODO: {{line.kind}} {{line.expression}} {
+: else-if line.is-leaf
+{{line.indent}}// TODO: {{line.kind}}: {{line.expression}}
+: else
+{{line.indent}}// TODO: {{line.kind}} {{line.expression}}
+: end-if
+: else
+: if line.is-open
+{{line.indent}}// TODO: {{line.kind}} {{line.expression}} {
+: else-if line.is-leaf
+{{line.indent}}// TODO: {{line.kind}}: {{line.expression}}
+: else
+{{line.indent}}// TODO: {{line.kind}} {{line.expression}}
+: end-if
+: end-if
+: end-for

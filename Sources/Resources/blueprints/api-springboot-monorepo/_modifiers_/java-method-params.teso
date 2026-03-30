@@ -1,0 +1,14 @@
+---
+input: method
+type: Object
+---
+: spaceless
+: if method.has-parameters
+: for param in method.parameters
+{{param.type | typename}}🔥{{param.name}}
+: if not @loop.last
+,🔥
+: end-if
+: end-for
+: end-if
+: end-spaceless
