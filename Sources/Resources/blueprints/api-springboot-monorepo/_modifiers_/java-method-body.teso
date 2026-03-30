@@ -160,7 +160,7 @@ type: Object
 {{line.indent}}// #else
 : else-if line.kind == "#endif"
 {{line.indent}}// #endif
-: else-if (line.kind == "http") or (line.kind == "path") or (line.kind == "query") or (line.kind == "headers") or (line.kind == "auth") or (line.kind == "expect") or (line.kind == "body") or (line.kind == "http-graphql") or (line.kind == "variables") or (line.kind == "grpc") or (line.kind == "payload") or (line.kind == "metadata") or (line.kind == "http-raw")
+: else-if line.kind in ["http", "websocket", "path", "query", "headers", "auth", "expect", "body", "http-graphql", "variables", "grpc", "payload", "metadata", "http-raw"]
 : if line.is-open
 {{line.indent}}// TODO: {{line.kind}} {{line.expression}} {
 : else-if line.is-leaf
@@ -168,7 +168,7 @@ type: Object
 : else
 {{line.indent}}// TODO: {{line.kind}} {{line.expression}}
 : end-if
-: else-if (line.kind == "pipe") or (line.kind == "filter") or (line.kind == "select") or (line.kind == "map") or (line.kind == "reduce") or (line.kind == "match") or (line.kind == "when") or (line.kind == "endmatch")
+: else-if line.kind in ["pipe", "filter", "select", "map", "reduce", "match", "when", "endmatch"]
 : if line.is-open
 {{line.indent}}// TODO: {{line.kind}} {{line.expression}} {
 : else-if line.is-leaf
