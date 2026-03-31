@@ -1,5 +1,6 @@
 -----
 api-base-path : /api/v1
+symbols-to-load : java
 -----
 
 announce "Generating SpringBoot Reactive Apis (monorepo) ..."

@@ -1,6 +1,7 @@
 -----
 Product-name : GenProduct
 Company-name : WowCompany
+symbols-to-load : typescript, mongodb_typescript
 -----
 
 announce "Generating NestJs Apis (monorepo) ..."
