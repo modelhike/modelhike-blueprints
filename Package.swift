@@ -14,8 +14,7 @@ let package = Package(
         .executable(name: "DevTester_Blueprints", targets: ["DevTester_Blueprints"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/modelhike/modelhike", from: "0.2.1"),
-        //.package(path: "../modelhike")
+        .package(url: "https://github.com/modelhike/modelhike", branch: "main")
     ],
     targets: [
         .target(
