@@ -14,13 +14,13 @@ let package = Package(
         .executable(name: "DevTester_Blueprints", targets: ["DevTester_Blueprints"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/modelhike/modelhike", branch: "main")
+        .package(url: "https://github.com/modelhike/modelhike-lib", branch: "main")
     ],
     targets: [
         .target(
             name: "ModelHike_Blueprints",
             dependencies: [
-                .product(name: "ModelHike", package: "ModelHike")
+                .product(name: "ModelHike", package: "modelhike-lib")
             ],
             path: "Sources",
             resources: [
@@ -31,7 +31,7 @@ let package = Package(
             name: "DevTester_Blueprints",
             dependencies: [
                 "ModelHike_Blueprints",
-                .product(name: "ModelHike", package: "ModelHike"),
+                .product(name: "ModelHike", package: "modelhike-lib"),
             ],
             path: "DevTester"
         ),
