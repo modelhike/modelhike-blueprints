@@ -1,0 +1,8 @@
+// Import gateway: any template that calls a shared `func` (see typescript.common.functions.teso)
+// should `import-file "typescript.imports"` once before its first `call`, rather than
+// import-file-ing each function-definition file directly. `func` registration happens at parse
+// time, so this must import before the calling template's `call` statements execute. As more
+// shared function files are added to this blueprint, import them here so callers only ever
+// need this one gateway.
+
+: import-file "typescript.common.functions"

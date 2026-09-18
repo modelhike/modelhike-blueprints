@@ -162,9 +162,7 @@ end-for // modules for loop
 set working_dir = "/"
 
 copy-folder "libs"
-//copy-folder "monorepo" to working_dir
 
-//render-file "README.md"
 render-file "docker-compose.yml"
 render-file "package.json"
 render-file "nest-cli.json"

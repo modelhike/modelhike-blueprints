@@ -1,3 +1,4 @@
+: import-file "java.imports"
 package {{embedded_type_pkg_name}};
 :
 import java.util.Date;
@@ -59,13 +60,7 @@ public class {{embedded-type.name}} {
 : if embedded-type.has-methods
 :
 : for method in embedded-type.methods
-  public {{method | java-return-type}} {{method.name}}({{method | java-method-params}}) {
-: if method.has-logic
-{{method | java-method-body}}
-: else
-      // TODO: implement
-: end-if
-  }
+: call renderMethod(method : method)
 :
 : end-for
 : end-if

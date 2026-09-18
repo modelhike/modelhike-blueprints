@@ -1,7 +1,31 @@
----
-input: method
-type: Object
----
+: func renderMethod(method)
+: set-str paramList
+: spaceless
+: if method.has-parameters
+: for param in method.parameters
+{{param.type | typename}}🔥{{param.name}}
+: if not @loop.last
+,🔥
+: end-if
+: end-for
+: end-if
+: end-spaceless
+: end-set
+: set-str returnTypeStr
+: spaceless
+: if method.has-return-type
+{{method.return-type | typename}}
+: else
+void
+: end-if
+: end-spaceless
+: end-set
+  public {{returnTypeStr}} {{method.name}}({{paramList}}) {
+: if not method.has-logic
+      // TODO: implement
+: else
+: set pipe_chain = ""
+: set pipe_terminal = ""
 : for line in method.logic-lines
 : if line.is-close
 : if (line.closing-kind == "if") or (line.closing-kind == "elseif") or (line.closing-kind == "else") or (line.closing-kind == "for") or (line.closing-kind == "while") or (line.closing-kind == "try") or (line.closing-kind == "catch") or (line.closing-kind == "finally") or (line.closing-kind == "switch") or (line.closing-kind == "case") or (line.closing-kind == "default")
@@ -16,20 +40,24 @@ type: Object
 : end-if
 : else-if line.closing-kind == "db"
 {{line.indent}};
+: else-if line.closing-kind in ["pipe", "filter", "select", "map", "reduce"]
+// Functional pipeline stages (PIPE/FILTER/MAP/REDUCE) have no real closing
+// statement -- they're rendered as a chained Stream expression when LET
+// closes the chain (see below), so their close rows are intentionally silent.
 : end-if
 : else-if line.kind == "if"
-{{line.indent}}if ({{line.condition}}) {
+{{line.indent}}if ({{line.condition | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")}}) {
 : else-if line.kind == "elseif"
-{{line.indent}}} else if ({{line.condition}}) {
+{{line.indent}}} else if ({{line.condition | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")}}) {
 : else-if line.kind == "else"
 {{line.indent}}} else {
 : else-if line.kind == "for"
 {{line.indent}}for (var {{line.for-item}} : {{line.for-collection}}) {
 : else-if line.kind == "while"
-{{line.indent}}while ({{line.condition}}) {
+{{line.indent}}while ({{line.condition | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")}}) {
 : else-if line.kind == "return"
 : if line.expression
-{{line.indent}}return {{line.expression}};
+{{line.indent}}return {{line.expression | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")}};
 : else
 {{line.indent}}return;
 : end-if
@@ -41,12 +69,50 @@ type: Object
 {{line.indent}}.bind("{{line.assign-lhs}}", {{line.assign-rhs}})
 : end-if
 : else
-{{line.indent}}{{line.assign-lhs}} = {{line.assign-rhs}};
+{{line.indent}}{{line.assign-lhs}} = {{line.assign-rhs | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")}};
 : end-if
 : else-if line.kind == "call"
 {{line.indent}}{{line.call-expression}};
+: else-if line.kind == "pipe"
+: set pipe_chain = line.expression
+: set-str pipe_chain
+{{pipe_chain}}.stream()
+: end-set
+: set pipe_terminal = ""
+: else-if line.kind == "filter"
+: set pipe_stage = line.lambda-body | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")
+: set-str pipe_chain
+{{pipe_chain}}.filter({{line.lambda-param}} -> {{pipe_stage}})
+: end-set
+: set pipe_terminal = ""
+: else-if line.kind == "map"
+: set pipe_stage = line.lambda-body | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")
+: set-str pipe_chain
+{{pipe_chain}}.map({{line.lambda-param}} -> {{pipe_stage}})
+: end-set
+: set pipe_terminal = ""
+: else-if line.kind == "select"
+: set pipe_stage = line.lambda-body | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")
+: set-str pipe_chain
+{{pipe_chain}}.map({{line.lambda-param}} -> {{pipe_stage}})
+: end-set
+: set pipe_terminal = ""
+: else-if line.kind == "reduce"
+: set pipe_stage = line.reduce-expression | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")
+: set-str pipe_chain
+{{pipe_chain}}.reduce({{line.reduce-initial}}, ({{line.reduce-accumulator}}, {{line.reduce-item}}) -> {{pipe_stage}})
+: end-set
+: set pipe_terminal = "reduce"
 : else-if line.kind == "let"
-{{line.indent}}var {{line.let-name}} = {{line.expression}};
+: if line.expression == "_"
+: if pipe_terminal == "reduce"
+{{line.indent}}var {{line.let-name}} = {{pipe_chain}};
+: else
+{{line.indent}}var {{line.let-name}} = {{pipe_chain}}.collect(java.util.stream.Collectors.toList());
+: end-if
+: else
+{{line.indent}}var {{line.let-name}} = {{line.expression | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")}};
+: end-if
 : else-if line.kind == "try"
 {{line.indent}}try {
 : else-if line.kind == "catch"
@@ -58,7 +124,7 @@ type: Object
 : else-if line.kind == "finally"
 {{line.indent}}} finally {
 : else-if line.kind == "throw"
-{{line.indent}}throw {{line.expression}};
+{{line.indent}}throw {{line.expression | replace(" AND ", " && ") + replace(" OR ", " || ") + replace(".length", ".size()")}};
 : else-if line.kind == "switch"
 {{line.indent}}switch ({{line.switch-subject}}) {
 : else-if line.kind == "case"
@@ -168,7 +234,7 @@ type: Object
 : else
 {{line.indent}}// TODO: {{line.kind}} {{line.expression}}
 : end-if
-: else-if line.kind in ["pipe", "filter", "select", "map", "reduce", "match", "when", "endmatch"]
+: else-if line.kind in ["match", "when", "endmatch"]
 : if line.is-open
 {{line.indent}}// TODO: {{line.kind}} {{line.expression}} {
 : else-if line.is-leaf
@@ -186,3 +252,6 @@ type: Object
 : end-if
 : end-if
 : end-for
+: end-if
+  }
+: end-func

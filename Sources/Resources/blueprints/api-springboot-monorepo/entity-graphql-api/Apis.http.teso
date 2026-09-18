@@ -14,7 +14,7 @@ GRAPHQL {{baseUrlString}}
 :
 mutation {{api.name}}($input: {{entity.name}}Input) {
   {{api.name}} (input: $input) {
-: call print-query-fields(props: entity.properties)
+: call print-query-fields(props: entity.properties, depth: 0)
     }
   }
 :
@@ -29,7 +29,7 @@ GRAPHQL {{baseUrlString}}
 :
 mutation {{api.name}}($input: {{entity.name}}Input) {
   {{api.name}} (input: $input) {
-: call print-query-fields(props: entity.properties)
+: call print-query-fields(props: entity.properties, depth: 0)
     }
   }
 :
@@ -54,7 +54,7 @@ GRAPHQL {{baseUrlString}}
 :
 query {
   {{api.name}}(_id : "{{randomID}}") {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -65,7 +65,7 @@ GRAPHQL {{baseUrlString}}
 :
 query {
   {{api.name}} {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -74,7 +74,7 @@ GRAPHQL {{baseUrlString}}
 :
 query {
   {{api.name}} {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -85,7 +85,7 @@ GRAPHQL {{baseUrlString}}
 :
 subscription {
 {{api.name}} {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -96,7 +96,7 @@ GRAPHQL {{baseUrlString}}
 :
 subscription {
 {{api.name}} {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -115,7 +115,7 @@ query {
   {{api.name}}(
     {{argsWithType}}
     ) {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -134,7 +134,7 @@ query {
   {{api.name}}(
     {{argsWithType}}
     ) {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -153,7 +153,7 @@ query {
   {{api.name}}(
     {{argsWithType}}
     ) {
-  : call print-query-fields(props: entity.properties)
+  : call print-query-fields(props: entity.properties, depth: 0)
   }
 }
 :
@@ -182,12 +182,13 @@ mutation {
 
 
 : --------------
-: func print-query-fields (props)
+: func print-query-fields (props, depth)
 : for property in props
-    : if property.is-object
+    : if (property.is-object) and (depth < 2)
     : set obj = property.obj-type | get-object
+    : set nextDepth = depth + 1
     {{property.name}} {
-    : call print-query-fields(props: obj.properties)
+    : call print-query-fields(props: obj.properties, depth: nextDepth)
     }
     : else
     {{property.name}}

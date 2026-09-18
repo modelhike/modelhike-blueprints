@@ -1,3 +1,28 @@
+: func renderPlantUmlMethodSignature(method)
+: set-str paramList
+: spaceless
+: if method.has-parameters
+: for param in method.parameters
+{{param.type | typename}}🔥{{param.name}}
+: if not @loop.last
+,🔥
+: end-if
+: end-for
+: end-if
+: end-spaceless
+: end-set
+: set-str returnTypeStr
+: spaceless
+: if method.has-return-type
+{{method.return-type | typename}}
+: else
+void
+: end-if
+: end-spaceless
+: end-set
+ +{{method.name}}({{paramList}}) : {{returnTypeStr}}
+: end-func
+
 @startuml
 :
 skin rose
@@ -13,7 +38,7 @@ class {{type.name}} {
 : end-for
 : if type.has-methods
 : for method in type.methods
- +{{method.name}}({{method | java-method-params}}) : {{method | java-return-type}}
+: call renderPlantUmlMethodSignature(method : method)
 : end-for
 : end-if
 }

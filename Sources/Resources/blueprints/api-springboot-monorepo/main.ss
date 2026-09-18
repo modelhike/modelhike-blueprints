@@ -1,5 +1,10 @@
 -----
+Product-name : GenProduct
+Company-name : WowCompany
+company-pkg-prefix : com.wowcompany
 api-base-path : /api/v1
+db-uri : mongodb://localhost:27017/genproduct
+allowed-cors-url : *
 symbols-to-load : java
 -----
 
@@ -58,6 +63,20 @@ render-folder "entity-files" to entity_dir
 render-folder "entity-graphql-api" to entity_dir
 
 end-for // entity for loop
+
+----------- services (behavior-only classes, no persistence) -------------
+for service in module.services
+set-str service_pkg_name
+> {{module_pkg_name}}
+end-set
+
+set-str service_dir
+> /base-services/{{module_folder_name}}/src/{{module_folder_structure}}/
+end-set
+
+render-folder "service-files" to service_dir
+
+end-for // service for loop
 
 ----------- embedded types -------------
 for embedded-type in module.embedded-types

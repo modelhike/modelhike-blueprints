@@ -1,3 +1,5 @@
+// Import the shared functions used below (e.g. `renderMethod`).
+: import-file "typescript.imports"
 import {
 : for common in @container.commons
 : for type in common.types
@@ -8,12 +10,19 @@ import {
 :
 
 : for module in @container.modules
-// {{ module.name }}
+{{ "// " }}{{ module.name }}
 : for type in module.types
 export class {{type.name}} {
 : for property in type.properties
  {{property.name}}!: {{property | typename}};
 : end-for
+: if type.has-methods
+:
+: for classMethod in type.methods
+: call renderMethod(method : classMethod)
+:
+: end-for
+: end-if
 }
 :
 
