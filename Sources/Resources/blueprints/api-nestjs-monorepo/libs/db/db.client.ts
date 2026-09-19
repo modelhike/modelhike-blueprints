@@ -5,10 +5,14 @@ import { Audit } from 'libs/includes/audit';
 
 export class DBClient {
   constructor(public readonly token?: UserSessionJwt) {}
-  
+
   private collection!: Collection<Document>;
   private client!: MongoClient;
   private db!: Db;
+
+  // ---------------------------------------------------------------------
+  // Connection lifecycle
+  // ---------------------------------------------------------------------
 
   async connect(collectionName: string) {
     const uri = process.env.DATABASE_URL;
@@ -36,6 +40,22 @@ export class DBClient {
     this.collection = this.db.collection(collectionName);
   }
 
+  async close() {
+    if (this.client) {
+      await this.client.close();
+    }
+  }
+
+  async pingCheck() {
+    return this.db.runCursorCommand({
+      ping: 1,
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // Create
+  // ---------------------------------------------------------------------
+
   async insert(payload: any): Promise<InternalResponse> {
     let response: InternalResponse;
     try {
@@ -58,6 +78,10 @@ export class DBClient {
     }
     return response;
   }
+
+  // ---------------------------------------------------------------------
+  // Update
+  // ---------------------------------------------------------------------
 
   async update({ id, payload }: { id: string; payload: any }): Promise<InternalResponse> {
     let response: InternalResponse;
@@ -133,6 +157,9 @@ export class DBClient {
     return response;
   }
 
+  // ---------------------------------------------------------------------
+  // Soft delete / activation state
+  // ---------------------------------------------------------------------
 
   async softDelete(id: string): Promise<InternalResponse> {
     let response: InternalResponse;
@@ -163,20 +190,29 @@ export class DBClient {
     return response;
   }
 
-  async totalActiveCount(): Promise<InternalResponse> {
+  async activate(id: string): Promise<InternalResponse> {
     let response: InternalResponse;
     try {
-      const countPipeline = [
-        {
-          $match: {
-            'audit.del': false,
-          },
-        },
-        { $count: 'total_count' },
-      ];
+      const audit = new Audit();
+      audit.upBy = this.token.getUserRef();
+      audit.upDt = new Date();
+      const upDtPayload = {
+        'audit.upDt': audit.upDt,
+        'audit.upBy': audit.upBy,
+        active: true,
+      };
 
-      const countResponse = await this.collection.aggregate(countPipeline).toArray();
-      response = InternalResponse.result(countResponse[0].total_count);
+      const getData = await this.findById(id);
+      if (!getData?.result?._id) { return InternalResponse.noData(); }
+
+      const updateResponse = await this.collection.updateOne({ _id: new ObjectId(id) }, { $set: { ...upDtPayload } });
+
+      if (updateResponse?.matchedCount) {
+        response = InternalResponse.success();
+      } else {
+        response = InternalResponse.noData();
+      }
+
     } catch (error) {
       response = InternalResponse.exception(error);
     }
@@ -184,21 +220,80 @@ export class DBClient {
     return response;
   }
 
-  async queryBasedCount(query: Map<string, any>): Promise<InternalResponse> {
+  async deactivate(id: string): Promise<InternalResponse> {
+    let response: InternalResponse;
+    try {
+      const audit = new Audit();
+      audit.upBy = this.token.getUserRef();
+      audit.upDt = new Date();
+      const upDtPayload = {
+        'audit.upDt': audit.upDt,
+        'audit.upBy': audit.upBy,
+        active: false,
+      };
+      const getData = await this.findById(id);
+      if (!getData?.result?._id) { return InternalResponse.noData(); }
+
+      const updateResponse = await this.collection.updateOne({ _id: new ObjectId(id) }, { $set: { ...upDtPayload } });
+
+      if (updateResponse?.matchedCount) {
+        response = InternalResponse.success();
+      } else {
+        response = InternalResponse.noData();
+      }
+
+    } catch (error) {
+      response = InternalResponse.exception(error);
+    }
+
+    return response;
+  }
+
+  // ---------------------------------------------------------------------
+  // Hard delete
+  // ---------------------------------------------------------------------
+
+  async hardDeleteOneByQuery({ query }: { query: Map<string, any> }): Promise<InternalResponse> {
     let response: InternalResponse;
     try {
       const formattedQuery = {
         ...Object.fromEntries(query),
       };
 
-      const countResponse = await this.collection.countDocuments(formattedQuery);
-      response = InternalResponse.result(countResponse);
+      const delResponse = await this.collection.deleteOne(formattedQuery);
+      if (delResponse?.deletedCount) {
+        response = InternalResponse.success();
+      } else {
+        response = InternalResponse.noData();
+      }
     } catch (error) {
       response = InternalResponse.exception(error);
     }
 
     return response;
   }
+
+  async hardDeleteOneById(_id: string): Promise<InternalResponse> {
+    let response: InternalResponse;
+    try {
+      const targetIdToDelete = new ObjectId(_id);
+
+      const delResponse = await this.collection.deleteOne({ _id: targetIdToDelete });
+      if (delResponse?.deletedCount) {
+        response = InternalResponse.success();
+      } else {
+        response = InternalResponse.noData();
+      }
+    } catch (error) {
+      response = InternalResponse.exception(error);
+    }
+
+    return response;
+  }
+
+  // ---------------------------------------------------------------------
+  // Reads
+  // ---------------------------------------------------------------------
 
   async findById(id: string, removeAudit: boolean = true): Promise<InternalResponse> {
     let response: InternalResponse;
@@ -245,7 +340,7 @@ export class DBClient {
       };
 
       const skipCount = (page - 1) * limit;
-      
+
       const dataResponse = await this.collection
         .find(formattedQuery)
         .sort({ 'audit.upDt': -1 })
@@ -331,29 +426,24 @@ export class DBClient {
     return response;
   }
 
-  async activate(id: string): Promise<InternalResponse> {
+  // ---------------------------------------------------------------------
+  // Counts
+  // ---------------------------------------------------------------------
+
+  async totalActiveCount(): Promise<InternalResponse> {
     let response: InternalResponse;
     try {
-      const audit = new Audit();
-      audit.upBy = this.token.getUserRef();
-      audit.upDt = new Date();
-      const upDtPayload = {
-        'audit.upDt': audit.upDt,
-        'audit.upBy': audit.upBy,
-        active: true,
-      };
+      const countPipeline = [
+        {
+          $match: {
+            'audit.del': false,
+          },
+        },
+        { $count: 'total_count' },
+      ];
 
-      const getData = await this.findById(id);
-      if (!getData?.result?._id) { return InternalResponse.noData(); }
-
-      const updateResponse = await this.collection.updateOne({ _id: new ObjectId(id) }, { $set: { ...upDtPayload } });
-
-      if (updateResponse?.matchedCount) {
-        response = InternalResponse.success();
-      } else {
-        response = InternalResponse.noData();
-      }
-
+      const countResponse = await this.collection.aggregate(countPipeline).toArray();
+      response = InternalResponse.result(countResponse[0].total_count);
     } catch (error) {
       response = InternalResponse.exception(error);
     }
@@ -361,82 +451,19 @@ export class DBClient {
     return response;
   }
 
-  async deactivate(id: string): Promise<InternalResponse> {
-    let response: InternalResponse;
-    try {
-      const audit = new Audit();
-      audit.upBy = this.token.getUserRef();
-      audit.upDt = new Date();
-      const upDtPayload = {
-        'audit.upDt': audit.upDt,
-        'audit.upBy': audit.upBy,
-        active: false,
-      };
-      const getData = await this.findById(id);
-      if (!getData?.result?._id) { return InternalResponse.noData(); }
-
-      const updateResponse = await this.collection.updateOne({ _id: new ObjectId(id) }, { $set: { ...upDtPayload } });
-
-      if (updateResponse?.matchedCount) {
-        response = InternalResponse.success();
-      } else {
-        response = InternalResponse.noData();
-      }
-
-    } catch (error) {
-      response = InternalResponse.exception(error);
-    }
-
-    return response;
-  }
-
-  async hardDeleteOneByQuery({ query }: { query: Map<string, any> }): Promise<InternalResponse> {
+  async queryBasedCount(query: Map<string, any>): Promise<InternalResponse> {
     let response: InternalResponse;
     try {
       const formattedQuery = {
         ...Object.fromEntries(query),
       };
 
-      const delResponse = await this.collection.deleteOne(formattedQuery);
-      if (delResponse?.deletedCount) {
-        response = InternalResponse.success();
-      } else {
-        response = InternalResponse.noData();
-      }
+      const countResponse = await this.collection.countDocuments(formattedQuery);
+      response = InternalResponse.result(countResponse);
     } catch (error) {
       response = InternalResponse.exception(error);
     }
 
     return response;
-  }
-
-  async hardDeleteOneById(_id: string): Promise<InternalResponse> {
-    let response: InternalResponse;
-    try {
-      const targetIdToDelete = new ObjectId(_id);
-
-      const delResponse = await this.collection.deleteOne({ _id: targetIdToDelete });
-      if (delResponse?.deletedCount) {
-        response = InternalResponse.success();
-      } else {
-        response = InternalResponse.noData();
-      }
-    } catch (error) {
-      response = InternalResponse.exception(error);
-    }
-
-    return response;
-  }
-
-  async close() {
-    if (this.client) {
-      await this.client.close();
-    }
-  }
-
-  async pingCheck() {
-    return this.db.runCursorCommand({
-      ping: 1,
-    });
   }
 }

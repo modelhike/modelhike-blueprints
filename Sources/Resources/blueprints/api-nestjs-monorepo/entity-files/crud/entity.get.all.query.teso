@@ -10,24 +10,7 @@ import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { DBClient } from 'libs/db/db.client';
 import { InternalResponse } from 'libs/includes/internal.response';
 
-: func getQueryParamString( propMapping, entity )
-  : spaceless
-  : set property = propMapping | get-last-recursive-prop( entity.name )
-  : if property
-    : if property.is-date
-      string
-    : else
-      : if param.has-multiple-params
-        Set<{{ property | typename }}>
-      : else
-        {{ property | typename }}
-      : end-if
-    : end-if
-  : else
-    any
-  : end-if
-  : end-spaceless
-: end-func
+: import-file "typescript.imports"
 
 :
 export class Find{{entity.name}}ByQuery {
@@ -35,9 +18,9 @@ export class Find{{entity.name}}ByQuery {
     public readonly page: number,
     public readonly limit: number,
   : for param in api.query-params
-    public readonly {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity :  entity ) }}=,
+    public readonly {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity : entity, asSet : param.has-multiple-params ) }}=,
   : if param.has-second-param-name
-    public readonly {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity :  entity ) }}=,
+    public readonly {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity : entity, asSet : param.has-multiple-params ) }}=,
   : end-if
   : end-for
  ) {}

@@ -1,0 +1,24 @@
+// Shared list/filter query-param helpers, used by both entity-files/crud/entity.get.all.query.teso
+// (the CQRS query class, which stores already-split multi-value params as a Set) and
+// entity-files/rest-api/entity.controller.teso (the @Query-decorated HTTP handler param, which is
+// always the raw, un-split string/number coming off the URL). Import via "typescript.imports"
+// rather than import-file-ing this directly.
+
+: func getQueryParamString( propMapping, entity, asSet )
+  : spaceless
+  : set property = propMapping | get-last-recursive-prop(entity.name)
+  : if property
+    : if property.is-date
+      string
+    : else
+      : if asSet
+        Set<{{ property | typename }}>
+      : else
+        {{ property | typename }}
+      : end-if
+    : end-if
+  : else
+    any
+  : end-if
+  : end-spaceless
+: end-func

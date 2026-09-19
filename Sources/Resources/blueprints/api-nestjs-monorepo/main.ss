@@ -8,13 +8,13 @@ announce "Generating NestJs Apis (monorepo) ..."
 
 set working_dir = "/libs/domain-models"
 
-render-file "typescript.domain.classes" as "domain.entities.ts"
-render-file "typescript.common.classes" as "common.classes.ts"
+render-file "domain-model-files/typescript.domain.classes" as "domain.entities.ts"
+render-file "domain-model-files/typescript.common.classes" as "common.classes.ts"
 
 set working_dir = "/libs/validation"
 
-render-file "yup.domain.classes" as "yup.domain.entities.schema.ts"
-render-file "yup.common.classes" as "yup.common.classes.schema.ts"
+render-file "validation-files/yup.domain.classes" as "yup.domain.entities.schema.ts"
+render-file "validation-files/yup.common.classes" as "yup.common.classes.schema.ts"
 
 
 for module in @container.modules
@@ -47,7 +47,7 @@ if api.is-create
 	> ./crud/create.{{entity.name | lowercase}}
 	end-set
 
-	render-file "entity.create.command" as file_name
+	render-file "entity-files/crud/entity.create.command" as file_name
 
 else-if api.is-update
 
@@ -63,7 +63,7 @@ else-if api.is-update
 	set-str api.cqrs-file-import-path
 	> ./crud/update.{{entity.name | lowercase}}
 	end-set
-	render-file "entity.update.command" as file_name
+	render-file "entity-files/crud/entity.update.command" as file_name
 
 else-if api.is-delete
 
@@ -79,7 +79,7 @@ else-if api.is-delete
 	set-str api.cqrs-file-import-path
 	> ./crud/delete.{{entity.name | lowercase}}
 	end-set
-	render-file "entity.delete.command" as file_name
+	render-file "entity-files/crud/entity.delete.command" as file_name
 
 else-if api.is-get-by-id
 
@@ -95,7 +95,7 @@ else-if api.is-get-by-id
 	set-str api.cqrs-file-import-path
 	> ./crud/get.{{entity.name | lowercase}}.byId
 	end-set
-	render-file "entity.get.byid.query" as file_name
+	render-file "entity-files/crud/entity.get.byid.query" as file_name
 
 else-if api.is-list
 
@@ -112,7 +112,7 @@ else-if api.is-list
 	> ./crud/list.{{entity.name | lowercase+plural}}
 	end-set
 
-	render-file "entity.get.all.query" as file_name
+	render-file "entity-files/crud/entity.get.all.query" as file_name
 
 else
     fatal-error unknown api '{{api.name}}', with type '{{api.type}}'
@@ -125,12 +125,12 @@ set-str working_dir
 > /apps/{{module_folder_name}}/src/{{submodule_folder_name}}
 end-set
 
-render-file "entity.controller" as "controller.ts"
-render-file "entity.controller.testing" as "controller.test.ts"
-render-file "entity.module" as "module.ts"
+render-file "entity-files/rest-api/entity.controller" as "controller.ts"
+render-file "entity-files/rest-api/entity.controller.testing" as "controller.test.ts"
+render-file "entity-files/rest-api/entity.module" as "module.ts"
 
-render-file "entity.validator" as "validator.ts"
-render-file "api.invoke.rest.client" as "requests.http"
+render-file "entity-files/rest-api/entity.validator" as "validator.ts"
+render-file "entity-files/rest-api/api.invoke.rest.client" as "requests.http"
 
 
 end-for // entity for loop
@@ -139,15 +139,15 @@ set-str working_dir
 > /apps/{{module_folder_name}}/src/
 end-set
 
-render-file "app.module" as "app.module.ts"
-render-file "app.main" as "main.ts"
+render-file "app-files/app.module" as "app.module.ts"
+render-file "app-files/app.main" as "main.ts"
 
 set-str working_dir
 > /apps/{{module_folder_name}}/
 end-set
 
-render-file "app.tsconfig.json" as "tsconfig.app.json"
-render-file "app.jest.config.js" as "jest.config.js"
+render-file "app-files/app.tsconfig.json" as "tsconfig.app.json"
+render-file "app-files/app.jest.config.js" as "jest.config.js"
 
 // generate documentation
 set working_dir = "/docs/class-diag"
@@ -163,7 +163,7 @@ set working_dir = "/"
 
 copy-folder "libs"
 
-render-file "docker-compose.yml"
-render-file "package.json"
-render-file "nest-cli.json"
-render-file "jest.config.ts"
+render-file "workspace-files/docker-compose.yml" as "docker-compose.yml"
+render-file "workspace-files/package.json" as "package.json"
+render-file "workspace-files/nest-cli.json" as "nest-cli.json"
+render-file "workspace-files/jest.config.ts" as "jest.config.ts"

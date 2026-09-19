@@ -1,27 +1,8 @@
-import * as Yup from 'yup';
-
-:
-export const minLenForOptioninalStrings = 1;
-export const minLenForArrays = 1;
-:
-export const pageLimitValidatorSchema = Yup.object()
-  .shape({
-    page: Yup.number().integer().positive().min(1),
-    limit: Yup.number().integer().positive().min(1).max(100)
-  })
-.strict()
-.noUnknown();
-:
-export const bufferValidator = (value: any) => {
-  if (value !== undefined) {
-    if (Buffer.isBuffer(value) || (typeof value === 'string' && /^<Buffer [0-9a-fA-F]+>$/.test(value))) {
-      return true;
-    }
-    return false;
-  }
-  return true;
-};
-:
+// Shared Yup schema-rendering helpers, used by both validation-files/yup.common.classes.teso
+// and validation-files/yup.domain.classes.teso. Each caller still declares its own local
+// `bufferValidator`/`minLenForArrays`/`minLenForOptioninalStrings` consts (referenced here as
+// plain output tokens) since those need to exist in each generated output file independently.
+// Import via "typescript.imports" rather than import-file-ing this directly.
 
 : func render-custom-type( name, property )
   //: spaceless
@@ -117,12 +98,3 @@ export const {{type.name}}Schema = Yup.object()
 :
 
 : end-func
-
-: for common in @container.commons
-// {{ common.name }}
-
-: for type in common.types
-: call render-type-schema(type: type)
-: end-for
-
-: end-for

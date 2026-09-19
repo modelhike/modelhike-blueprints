@@ -1,4 +1,5 @@
 : set entity_name = entity.name | lowercase
+: import-file "typescript.imports"
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { InternalResponse } from 'libs/includes/internal.response';
 import { ExternalResponse } from 'libs/includes/external.response';
@@ -78,21 +79,6 @@ export class {{entity.name}}Controller {
 
 : else-if api.is-list
 
-: func getQueryParamString( propMapping, entity )
-  : spaceless
-  : set property = propMapping | get-last-recursive-prop(entity.name)
-  : if property
-    : if property.is-date
-      string
-    : else
-      {{ property | typename }}
-    : end-if
-  : else
-    any
-  : end-if
-  : end-spaceless
-: end-func
-
 : func getQueryParamNameAsQueryInput( param )
   : if param.has-multiple-params
     target{{param.param-name}}
@@ -121,9 +107,9 @@ export class {{entity.name}}Controller {
     @Query('page', ParseIntPipe) page: number = 1,
     @Query('limit', ParseIntPipe) limit: number = 10,
 : for param in api.query-params
-    @Query('{{param.param-name}}') {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity : entity ) }}=,
+    @Query('{{param.param-name}}') {{param.param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first, entity : entity, asSet : false ) }}=,
   : if param.has-second-param-name
-    @Query('{{param.second-param-name}}') {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first,  entity : entity ) }}= ,
+    @Query('{{param.second-param-name}}') {{param.second-param-name}}: ={{ call getQueryParamString( propMapping : param.prop-mapping-first,  entity : entity, asSet : false ) }}= ,
   : end-if
 : end-for
   ): Promise<any> {
