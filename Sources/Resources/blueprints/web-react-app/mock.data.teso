@@ -1,0 +1,28 @@
+: for module in @container.modules
+: for entity in module.entities-and-dtos
+import type { {{entity.name}} } from '../types/{{entity.name}}';
+: end-for
+: end-for
+:
+: for module in @container.modules
+: for entity in module.entities-and-dtos
+export const {{entity.name | lowercase + plural}}: {{entity.name}}[] = [
+  {
+: for property in entity.properties
+    {{property.name}}:{{property | sample-value}},
+: end-for
+  },
+  {
+: for property in entity.properties
+    {{property.name}}:{{property | sample-value}},
+: end-for
+  },
+  {
+: for property in entity.properties
+    {{property.name}}:{{property | sample-value}},
+: end-for
+  },
+];
+:
+: end-for
+: end-for

@@ -1,0 +1,82 @@
+import React from 'react';
+
+export function {{view.name}}() {
+: for action in view.actions
+  function handle_{{action.trigger | replace(" ", "_")}}() {
+: for line in action.lines
+    console.log({{ "'" }}{{line}}{{ "'" }});
+: end-for
+  }
+
+: end-for
+  return (
+    <section className="view {{view.name}}">
+      <h2>{{view.title}}</h2>
+: if view.has-description
+      <p className="view-description">{{view.description}}</p>
+: end-if
+: for section in view.sections
+      <fieldset>
+        <legend>{{section.name}}</legend>
+: for control in section.controls
+: if control.type-name == "Boolean"
+        <label>
+          <input type="checkbox" name="{{control.name}}" />
+          {{control.name}}
+        </label>
+: else-if control.type-name in ["DateTime", "Date"]
+        <label>
+          {{control.name}}
+          <input type="date" name="{{control.name}}" />
+        </label>
+: else-if control.type-name in ["Int", "Float", "Number"]
+        <label>
+          {{control.name}}
+          <input type="number" name="{{control.name}}" />
+        </label>
+: else
+        <label>
+          {{control.name}}
+          <input type="text" name="{{control.name}}" />
+        </label>
+: end-if
+: end-for
+      </fieldset>
+: end-for
+: if view.has-bindings
+      <fieldset>
+: for control in view.bindings
+: if control.type-name == "Boolean"
+        <label>
+          <input type="checkbox" name="{{control.name}}" />
+          {{control.name}}
+        </label>
+: else-if control.type-name in ["DateTime", "Date"]
+        <label>
+          {{control.name}}
+          <input type="date" name="{{control.name}}" />
+        </label>
+: else-if control.type-name in ["Int", "Float", "Number"]
+        <label>
+          {{control.name}}
+          <input type="number" name="{{control.name}}" />
+        </label>
+: else
+        <label>
+          {{control.name}}
+          <input type="text" name="{{control.name}}" />
+        </label>
+: end-if
+: end-for
+      </fieldset>
+: end-if
+: if view.has-actions
+      <div className="actions">
+: for action in view.actions
+        <button type="button" onClick={handle_{{action.trigger | replace(" ", "_")}}}>{{action.trigger}}</button>
+: end-for
+      </div>
+: end-if
+    </section>
+  );
+}

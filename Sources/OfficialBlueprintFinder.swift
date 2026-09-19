@@ -14,6 +14,7 @@ public actor OfficialBlueprintFinder: BlueprintFinder {
         return [
             "api-nestjs-monorepo",
             "api-springboot-monorepo",
+            "web-react-app",
         ]
     }
     

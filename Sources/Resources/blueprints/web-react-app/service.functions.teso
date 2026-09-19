@@ -1,0 +1,21 @@
+: import-file "react.imports"
+{{ "// " }}{{service.name}}
+: for entity in module.entities-and-dtos
+import type { {{entity.name}} } from '../types/{{entity.name}}';
+: end-for
+: set-str importList
+: spaceless
+: for entity in module.entities-and-dtos
+{{entity.name | lowercase + plural}}
+: if not @loop.last
+,🔥
+: end-if
+: end-for
+: end-spaceless
+: end-set
+import { {{importList}} } from '../data/mockData';
+:
+: for method in service.methods
+: call renderMethod(method : method)
+
+: end-for

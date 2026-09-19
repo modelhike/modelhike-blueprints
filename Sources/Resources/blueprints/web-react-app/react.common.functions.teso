@@ -1,0 +1,124 @@
+: func renderMethod(method)
+: spaceless
+export🔥function🔥{{method.name}}(
+: if method.has-parameters
+: for param in method.parameters
+{{param.name}}:🔥{{param.type | typename}}
+: if not @loop.last
+,🔥
+: end-if
+: end-for
+: end-if
+: if method.has-return-type
+):🔥{{method.return-type | typename}}🔥{
+: else
+):🔥void🔥{
+: end-if
+: end-spaceless
+:
+: if method.has-logic
+: set pipe_chain = ""
+: for line in method.logic-lines
+: if line.is-close
+: if line.closing-kind in ["if", "elseif", "else", "for", "while", "try", "catch", "finally", "switch", "case", "default"]
+{{line.indent}}}
+: else-if line.closing-kind in ["pipe", "filter", "select", "map", "reduce", "let"]
+// Functional pipeline stages (PIPE/FILTER/MAP/REDUCE/LET) have no real closing
+// brace -- they're rendered as a chained expression when LET closes the chain
+// (see below), so their close rows are intentionally silent.
+: else
+{{line.indent}}// TODO: close {{line.closing-kind}}
+: end-if
+: else-if line.kind == "pipe"
+: set pipe_chain = line.expression
+: else-if line.kind == "filter"
+: set pipe_stage = line.lambda-body | replace(" AND ", " && ") + replace(" OR ", " || ")
+: set-str pipe_chain
+{{pipe_chain}}.filter(({{line.lambda-param}}) => {{pipe_stage}})
+: end-set
+: else-if line.kind == "map"
+: set pipe_stage = line.lambda-body | replace(" AND ", " && ") + replace(" OR ", " || ")
+: set-str pipe_chain
+{{pipe_chain}}.map(({{line.lambda-param}}) => {{pipe_stage}})
+: end-set
+: else-if line.kind == "select"
+: set pipe_stage = line.lambda-body | replace(" AND ", " && ") + replace(" OR ", " || ")
+: set-str pipe_chain
+{{pipe_chain}}.map(({{line.lambda-param}}) => {{pipe_stage}})
+: end-set
+: else-if line.kind == "reduce"
+: set pipe_stage = line.reduce-expression | replace(" AND ", " && ") + replace(" OR ", " || ")
+: set-str pipe_chain
+{{pipe_chain}}.reduce(({{line.reduce-accumulator}}, {{line.reduce-item}}) => {{pipe_stage}}, {{line.reduce-initial}})
+: end-set
+: else-if line.kind == "let"
+: if line.expression == "_"
+{{line.indent}}const {{line.let-name}} = {{pipe_chain}};
+: else
+{{line.indent}}const {{line.let-name}} = {{line.expression | replace(" AND ", " && ") + replace(" OR ", " || ")}};
+: end-if
+: else-if line.kind == "if"
+{{line.indent}}if ({{line.condition | replace(" AND ", " && ") + replace(" OR ", " || ")}}) {
+: else-if line.kind == "elseif"
+{{line.indent}}} else if ({{line.condition | replace(" AND ", " && ") + replace(" OR ", " || ")}}) {
+: else-if line.kind == "else"
+{{line.indent}}} else {
+: else-if line.kind == "for"
+{{line.indent}}for (const {{line.for-item}} of {{line.for-collection}}) {
+: else-if line.kind == "while"
+{{line.indent}}while ({{line.condition | replace(" AND ", " && ") + replace(" OR ", " || ")}}) {
+: else-if line.kind == "return"
+: if line.expression
+{{line.indent}}return {{line.expression | replace(" AND ", " && ") + replace(" OR ", " || ")}};
+: else
+{{line.indent}}return;
+: end-if
+: else-if line.kind == "assign"
+{{line.indent}}{{line.assign-lhs}} = {{line.assign-rhs | replace(" AND ", " && ") + replace(" OR ", " || ")}};
+: else-if line.kind == "call"
+{{line.indent}}{{line.call-expression}};
+: else-if line.kind == "try"
+{{line.indent}}try {
+: else-if line.kind == "catch"
+: if line.catch-type
+{{line.indent}}} catch ({{line.catch-variable}}: {{line.catch-type}}) {
+: else
+{{line.indent}}} catch ({{line.catch-variable}}) {
+: end-if
+: else-if line.kind == "finally"
+{{line.indent}}} finally {
+: else-if line.kind == "throw"
+{{line.indent}}throw {{line.expression}};
+: else-if line.kind == "switch"
+{{line.indent}}switch ({{line.switch-subject}}) {
+: else-if line.kind == "case"
+{{line.indent}}case {{line.case-value}}:
+: else-if line.kind == "default"
+{{line.indent}}default:
+: else-if line.kind == "break"
+{{line.indent}}break;
+: else-if line.kind == "continue"
+{{line.indent}}continue;
+: else-if line.kind == "expr"
+{{line.indent}}{{line.expression}};
+: else-if line.kind == "raw"
+{{line.indent}}{{ "// raw: " }}{{line.expression}}
+: else-if line.kind == "note"
+{{line.indent}}{{ "// note: " }}{{line.expression}}
+: else-if line.kind == "needs-review"
+{{line.indent}}{{ "// NEEDS REVIEW: " }}{{line.expression}}
+: else
+: if line.is-open
+{{line.indent}}{{ "// TODO: " }}{{line.kind}} {{line.expression}} {
+: else-if line.is-leaf
+{{line.indent}}{{ "// TODO: " }}{{line.kind}}: {{line.expression}}
+: else
+{{line.indent}}{{ "// TODO: " }}{{line.kind}} {{line.expression}}
+: end-if
+: end-if
+: end-for
+: else
+{{ "  // TODO: implement" }}
+: end-if
+}
+: end-func

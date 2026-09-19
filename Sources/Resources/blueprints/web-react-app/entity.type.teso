@@ -1,0 +1,9 @@
+export interface {{entity.name}} {
+: for property in entity.properties
+: if property.is-array
+  {{property.name}}: {{property | typename}}[];
+: else
+  {{property.name}}: {{property | typename}};
+: end-if
+: end-for
+}
